@@ -6,7 +6,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MENU_PATH = path.join(__dirname, 'data', 'menu.json');
 const TEMPLATES_DIR = path.join(__dirname, 'templates');
-const LOGO_PATH = path.join(__dirname, 'public', 'assets', 'herd-brand.png');
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || null;
 
 app.use(express.json());
@@ -30,15 +29,9 @@ function readMenu() {
   return JSON.parse(fs.readFileSync(MENU_PATH, 'utf8'));
 }
 
-function readLogoBase64() {
-  return fs.readFileSync(LOGO_PATH).toString('base64');
-}
-
 function renderTemplate(templateName, menu) {
   const tpl = fs.readFileSync(path.join(TEMPLATES_DIR, templateName), 'utf8');
-  return tpl
-    .replace('__MENU_DATA__', JSON.stringify(menu))
-    .replace('__LOGO_BASE64__', readLogoBase64());
+  return tpl.replace('__MENU_DATA__', JSON.stringify(menu));
 }
 
 // ── Routes ────────────────────────────────────────────────────────────────────

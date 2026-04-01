@@ -31,7 +31,6 @@
 <div id="herd-menu-widget">
 <script>(function(){
 var MENU=__MENU_DATA__;
-var LOGO='data:image/png;base64,__LOGO_BASE64__';
 function fmt(p){var n=parseFloat(p);if(!n)return'';return'\u00a3'+(n%1===0?n:n.toFixed(2));}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function render(){
@@ -39,7 +38,7 @@ var w=document.getElementById('herd-menu-widget');
 if(!w)return;
 var h='';
 h+='<div class="hmw-header">';
-h+='<img class="hmw-brand-img" src="'+LOGO+'" alt="Herd at Todenham Manor Farm">';
+if(MENU.meta&&MENU.meta.logoUrl)h+='<img class="hmw-brand-img" src="'+esc(MENU.meta.logoUrl)+'" alt="Herd at Todenham Manor Farm">';
 if(MENU.meta&&MENU.meta.tagline)h+='<p class="hmw-tagline">'+esc(MENU.meta.tagline)+'</p>';
 h+='</div>';
 h+='<div class="hmw-tabs" role="tablist">';

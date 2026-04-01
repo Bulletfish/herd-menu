@@ -244,6 +244,13 @@
         <textarea id="meta-footer" rows="4"></textarea>
       </div>
     </div>
+    <div style="padding:0 18px 18px;">
+      <div class="field">
+        <label>Logo URL (used in the Ecwid embed)</label>
+        <input id="meta-logo-url" type="url" class="item-input" style="width:100%;border:1px solid var(--border);border-radius:var(--radius);padding:7px 10px;"
+          placeholder="https://cdn.jsdelivr.net/gh/...">
+      </div>
+    </div>
   </div>
 
   <div id="sections-container"></div>
@@ -294,6 +301,7 @@ async function init() {
 function renderAll() {
   document.getElementById('meta-tagline').value = menu.meta.tagline;
   document.getElementById('meta-footer').value = menu.meta.footer;
+  document.getElementById('meta-logo-url').value = menu.meta.logoUrl || '';
   document.getElementById('last-updated').textContent = menu.meta.lastUpdated ? 'Last saved: ' + menu.meta.lastUpdated : '';
   renderSections();
 }
@@ -393,6 +401,7 @@ function deleteItem(si, ii) {
 async function saveMenu() {
   menu.meta.tagline = document.getElementById('meta-tagline').value.trim();
   menu.meta.footer = document.getElementById('meta-footer').value.trim();
+  menu.meta.logoUrl = document.getElementById('meta-logo-url').value.trim();
 
   const statusEl = document.getElementById('save-status');
   statusEl.textContent = 'Saving…';
