@@ -1,0 +1,119 @@
+{
+  "meta": {
+    "tagline": "From our farm to your table, our meat is reared with care on our land, while other ingredients are sourced from trusted local growers. Inspired by our Head Chef Chris's passion for British and global flavours, our menu reflects sustainability, seasonality, and honest cooking.",
+    "footer": "Our team will gladly accommodate allergies and dietary requirements wherever possible; please speak to us if you require any variation to the dishes. A discretionary 12.5% service charge will be added to your bill. We ask that no picnics be consumed at tables.",
+    "lastUpdated": "2026-04-01"
+  },
+  "sections": [
+    {
+      "id": "nibbles",
+      "name": "NIBBLES",
+      "items": [
+        {
+          "name": "Olives",
+          "price": 4.5,
+          "description": ""
+        },
+        {
+          "name": "Smoked almonds",
+          "price": 6,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": "small-plates",
+      "name": "SMALL PLATES",
+      "items": [
+        {
+          "name": "English tomatoes, goats curd",
+          "price": 8,
+          "description": ""
+        },
+        {
+          "name": "Fried chicken, sriracha, hot honey",
+          "price": 10,
+          "description": ""
+        },
+        {
+          "name": "Padron peppers, smoked salt",
+          "price": 8,
+          "description": ""
+        },
+        {
+          "name": "Burrata, crispy chilli oil",
+          "price": 10,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": "large-plates",
+      "name": "LARGE PLATES",
+      "items": [
+        {
+          "name": "Half chicken, Herb Aioli",
+          "price": 20,
+          "description": ""
+        },
+        {
+          "name": "Old spot pork ribs, BBQ'd rhubarb",
+          "price": 20,
+          "description": ""
+        },
+        {
+          "name": "Butchers cut steak, bone marrow",
+          "price": 25,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": "burgers-buns",
+      "name": "BURGERS & BUNS",
+      "items": [
+        {
+          "name": "Double cheese burger, pickles, burger sauce, crispy onions",
+          "price": 22,
+          "description": ""
+        },
+        {
+          "name": "Triple smash patty, BBQ shin, pickles, truffle, smoked cheese",
+          "price": 26,
+          "description": ""
+        },
+        {
+          "name": "BBQ pulled Old spot pork bun, green chilli slaw",
+          "price": 19,
+          "description": ""
+        },
+        {
+          "name": "Hen of the wood mushroom, blue cheese, ranch, crispy onions",
+          "price": 16,
+          "description": ""
+        }
+      ]
+    },
+    {
+      "id": "sides",
+      "name": "SIDES",
+      "items": [
+        {
+          "name": "Smoked potatoes, Lincolnshire poacher",
+          "price": 8,
+          "description": ""
+        },
+        {
+          "name": "Green salad, vinaigrette",
+          "price": 5,
+          "description": ""
+        },
+        {
+          "name": "Fries",
+          "price": 5,
+          "description": "add Truffle & Parmesan +2.5"
+        }
+      ]
+    }
+  ]
+}

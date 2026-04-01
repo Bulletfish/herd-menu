@@ -1,0 +1,78 @@
+<!-- START THE HERD MENU WIDGET -->
+<style>
+#herd-menu-widget*{box-sizing:border-box;margin:0;padding:0}
+#herd-menu-widget{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#F9F7F2;border-radius:8px;overflow:hidden;max-width:780px;margin:0 auto}
+#herd-menu-widget .hmw-header{text-align:center;padding:28px 24px 16px;background:#fff;border-bottom:1px solid #dde5de}
+#herd-menu-widget .hmw-brand-img{display:block;width:200px;margin:0 auto}
+#herd-menu-widget .hmw-tagline{font-size:12px;color:#666;margin:12px auto 0;max-width:520px;line-height:1.6;font-style:italic}
+#herd-menu-widget .hmw-tabs{display:flex;overflow-x:auto;background:#fff;border-bottom:2px solid #dde5de;scrollbar-width:none;-ms-overflow-style:none}
+#herd-menu-widget .hmw-tabs::-webkit-scrollbar{display:none}
+#herd-menu-widget .hmw-tab{flex-shrink:0;padding:11px 18px;font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:#6b7c6d;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;white-space:nowrap;font-family:'Courier New',Courier,monospace}
+#herd-menu-widget .hmw-tab:hover{color:#2F5233}
+#herd-menu-widget .hmw-tab.active{color:#2F5233;border-bottom-color:#2F5233}
+#herd-menu-widget .hmw-panels{padding:0}
+#herd-menu-widget .hmw-panel{display:none;padding:20px 24px;animation:hmwFade .2s ease}
+#herd-menu-widget .hmw-panel.active{display:block}
+@keyframes hmwFade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+#herd-menu-widget .hmw-item{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #e8ede9;gap:12px}
+#herd-menu-widget .hmw-item:last-child{border-bottom:none}
+#herd-menu-widget .hmw-item-left{flex:1;min-width:0}
+#herd-menu-widget .hmw-item-name{font-size:13px;color:#1a1a1a;font-weight:400;line-height:1.4}
+#herd-menu-widget .hmw-item-desc{font-size:11px;color:#888;font-style:italic;margin-top:2px}
+#herd-menu-widget .hmw-item-price{font-size:13px;color:#2F5233;font-weight:500;white-space:nowrap;flex-shrink:0}
+#herd-menu-widget .hmw-footer{padding:14px 24px;background:#fff;border-top:1px solid #dde5de;font-size:10.5px;color:#888;text-align:center;line-height:1.6;font-style:italic}
+#herd-menu-widget .hmw-updated{font-size:10px;color:#aaa;text-align:center;padding:6px 0 10px;background:#F9F7F2}
+@media(max-width:520px){
+  #herd-menu-widget .hmw-brand-img{width:160px}
+  #herd-menu-widget .hmw-panel{padding:16px}
+  #herd-menu-widget .hmw-tab{padding:10px 12px;font-size:10px}
+}
+</style>
+<div id="herd-menu-widget">
+<script>(function(){
+var MENU=__MENU_DATA__;
+var LOGO='data:image/png;base64,__LOGO_BASE64__';
+function fmt(p){var n=parseFloat(p);if(!n)return'';return'\u00a3'+(n%1===0?n:n.toFixed(2));}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function render(){
+var w=document.getElementById('herd-menu-widget');
+if(!w)return;
+var h='';
+h+='<div class="hmw-header">';
+h+='<img class="hmw-brand-img" src="'+LOGO+'" alt="Herd at Todenham Manor Farm">';
+if(MENU.meta&&MENU.meta.tagline)h+='<p class="hmw-tagline">'+esc(MENU.meta.tagline)+'</p>';
+h+='</div>';
+h+='<div class="hmw-tabs" role="tablist">';
+MENU.sections.forEach(function(s,i){h+='<button class="hmw-tab'+(i===0?' active':'')+'" role="tab" data-panel="hmw-p-'+i+'" onclick="hmwTab(this)">'+esc(s.name)+'</button>';});
+h+='</div>';
+h+='<div class="hmw-panels">';
+MENU.sections.forEach(function(s,i){
+  h+='<div class="hmw-panel'+(i===0?' active':'')+'" id="hmw-p-'+i+'">';
+  s.items.forEach(function(item){
+    h+='<div class="hmw-item">';
+    h+='<div class="hmw-item-left">';
+    h+='<div class="hmw-item-name">'+esc(item.name)+'</div>';
+    if(item.description)h+='<div class="hmw-item-desc">'+esc(item.description)+'</div>';
+    h+='</div>';
+    h+='<div class="hmw-item-price">'+fmt(item.price)+'</div>';
+    h+='</div>';
+  });
+  h+='</div>';
+});
+h+='</div>';
+if(MENU.meta&&MENU.meta.footer)h+='<div class="hmw-footer">'+esc(MENU.meta.footer)+'</div>';
+if(MENU.meta&&MENU.meta.lastUpdated)h+='<div class="hmw-updated">Menu updated '+esc(MENU.meta.lastUpdated)+'</div>';
+w.innerHTML=h;
+}
+window.hmwTab=function(btn){
+  var widget=btn.closest('#herd-menu-widget');
+  widget.querySelectorAll('.hmw-tab').forEach(function(t){t.classList.remove('active');});
+  widget.querySelectorAll('.hmw-panel').forEach(function(p){p.classList.remove('active');});
+  btn.classList.add('active');
+  var panel=widget.querySelector('#'+btn.dataset.panel);
+  if(panel)panel.classList.add('active');
+};
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',render);}else{render();}
+})();</script>
+</div>
+<!-- END THE HERD MENU WIDGET -->

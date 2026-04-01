@@ -1,0 +1,485 @@
+<!-- START THE HERD MENU WIDGET -->
+<div id="herd-unique-menu-wrapper" class="herd-menu-wrapper" style="width: 100%; box-sizing: border-box; display: block;">
+
+    <style>
+        /* Scoped CSS for the Menu Container */
+        #herd-unique-menu-wrapper {
+            /* Local variables */
+            --herd-primary: #2F4F4F; /* Dark Slate / Sage Green */
+            --herd-accent: #C19A6B; /* Muted Gold / Earthy */
+            --herd-bg: #F9F9F7; /* Off-white / Cream */
+            --herd-text: #333333;
+            --herd-light-grey: #e0e0e0;
+            
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: var(--herd-text);
+            background-color: transparent;
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        /* Reset box sizing for this widget */
+        #herd-unique-menu-wrapper * {
+            box-sizing: border-box;
+        }
+    
+        /* Container Styles */
+        #herd-unique-menu-wrapper .herd-menu-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: block;
+            position: relative;
+        }
+    
+        /* Header */
+        #herd-unique-menu-wrapper .herd-menu-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+    
+        #herd-unique-menu-wrapper .herd-menu-header h2 {
+            font-size: 2.5rem;
+            color: var(--herd-primary);
+            margin-bottom: 10px;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            line-height: 1.2;
+            margin-top: 0;
+            border: none;
+        }
+    
+        #herd-unique-menu-wrapper .herd-menu-header p {
+            color: #666;
+            font-style: italic;
+            margin: 0;
+        }
+    
+        /* Tabs Navigation */
+        #herd-unique-menu-wrapper .herd-menu-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--herd-light-grey);
+            padding-bottom: 20px;
+            list-style: none;
+            padding-left: 0;
+        }
+    
+        #herd-unique-menu-wrapper .herd-tab-btn {
+            background: none;
+            border: 2px solid transparent;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--herd-text);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-radius: 30px;
+            font-family: inherit;
+            appearance: none;
+            -webkit-appearance: none;
+            margin: 0;
+            line-height: normal;
+        }
+    
+        #herd-unique-menu-wrapper .herd-tab-btn:hover {
+            color: var(--herd-primary);
+            background-color: rgba(47, 79, 79, 0.05);
+        }
+    
+        #herd-unique-menu-wrapper .herd-tab-btn.active {
+            border-color: var(--herd-primary);
+            color: var(--herd-primary);
+        }
+    
+        /* Menu Sections */
+        #herd-unique-menu-wrapper .herd-menu-section {
+            display: none; /* Hidden by default */
+            animation: herdFadeIn 0.5s ease;
+        }
+    
+        #herd-unique-menu-wrapper .herd-menu-section.active {
+            display: block !important;
+        }
+    
+        #herd-unique-menu-wrapper .herd-section-title {
+            text-align: center;
+            font-size: 1.8rem;
+            color: var(--herd-primary);
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--herd-light-grey);
+            line-height: 0.1em;
+            margin-left: 50px;
+            margin-right: 50px; 
+            margin-top: 0;
+        }
+    
+        #herd-unique-menu-wrapper .herd-section-title span {
+            background: #fff;
+            padding: 0 20px; 
+        }
+    
+        /* Grid Layout */
+        #herd-unique-menu-wrapper .herd-menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+    
+        #herd-unique-menu-wrapper .herd-menu-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+    
+        #herd-unique-menu-wrapper .herd-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 1px dotted var(--herd-light-grey);
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+        }
+    
+        #herd-unique-menu-wrapper .herd-item-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--herd-primary);
+        }
+    
+        #herd-unique-menu-wrapper .herd-item-price {
+            font-weight: 600;
+            color: var(--herd-accent);
+            white-space: nowrap;
+        }
+    
+        #herd-unique-menu-wrapper .herd-item-desc {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.5;
+            margin: 0;
+        }
+    
+        /* Full Menu Button Style */
+        #herd-unique-menu-wrapper .herd-pdf-area {
+            text-align: center;
+            padding: 40px;
+            background-color: #f4f4f4;
+            border-radius: 8px;
+        }
+        
+        #herd-unique-menu-wrapper .herd-download-btn {
+            background-color: var(--herd-primary);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background 0.3s;
+            display: inline-block;
+            border: none;
+        }
+        
+        #herd-unique-menu-wrapper .herd-download-btn:hover {
+            background-color: #1a2f2f;
+            color: #fff;
+        }
+    
+        /* Animations */
+        @keyframes herdFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            #herd-unique-menu-wrapper .herd-menu-container {
+                padding: 20px;
+            }
+            
+            #herd-unique-menu-wrapper .herd-menu-header h2 {
+                font-size: 2rem;
+            }
+    
+            #herd-unique-menu-wrapper .herd-menu-tabs {
+                gap: 10px;
+            }
+    
+            #herd-unique-menu-wrapper .herd-tab-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+                flex: 1 1 auto;
+                text-align: center;
+            }
+    
+            #herd-unique-menu-wrapper .herd-menu-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            #herd-unique-menu-wrapper .herd-section-title {
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
+    </style>
+    
+    <div class="herd-menu-container">
+        <header class="herd-menu-header">
+            <h2>The Herd Menu</h2>
+            <p>Todenham Manor Farm &bull; Farm to Table</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="herd-menu-tabs">
+            <button type="button" class="herd-tab-btn active" data-target="herd-breakfast">Breakfast</button>
+            <button type="button" class="herd-tab-btn" data-target="herd-lunch">Lunch</button>
+            <button type="button" class="herd-tab-btn" data-target="herd-coffee">Coffee & Cakes</button>
+            <button type="button" class="herd-tab-btn" data-target="herd-sunday">Sunday Roast</button>
+            <button type="button" class="herd-tab-btn" data-target="herd-fullmenu">Full Menu</button>
+        </div>
+
+        <!-- Content: Breakfast -->
+        <div id="herd-breakfast" class="herd-menu-section active" style="display: block;">
+            <h3 class="herd-section-title"><span>Start the Day</span></h3>
+            <div class="herd-menu-grid">
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">The Todenham Full English</span>
+                        <span class="herd-item-price">15.00</span>
+                    </div>
+                    <p class="herd-item-desc">Old spot sausage, smoked streaky bacon, vine tomatoes, wild mushrooms, crispy potatoes, beans, fruit pig black pudding, choice of eggs</p>
+                </div>
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Eggs Benedict/Florentine/Royale</span>
+                        <span class="herd-item-price">12.00</span>
+                    </div>
+                    <p class="herd-item-desc">Poached eggs & hollandaise on a toasted muffin. Choose ham, spinach or smoked salmon.</p>
+                </div>
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Smashed avocado, halloumi, poached eggs on seeded sour dough</span>
+                        <span class="herd-item-price">12.00</span>
+                    </div>
+                    <p class="herd-item-desc">Smashed avocado, golden grilled halloumi and free-range eggs on crisp seeded sourdough.</p>
+                </div>
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Old spot sausage bap</span>
+                        <span class="herd-item-price">8.00</span>
+                    </div>
+                    <p class="herd-item-desc">Our award-winning outdoor reared Old Spot sausages served in a fresh, soft white bap.</p>
+                </div>
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Dry cured smoked streaky bacon bap</span>
+                        <span class="herd-item-price">8.00</span>
+                    </div>
+                    <p class="herd-item-desc">Todenham dry cured smoked streaky bacon served in a classic soft white roll.</p>
+                </div>
+                 <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Tomatoes on toast</span>
+                        <span class="herd-item-price">9.00</span>
+                    </div>
+                    <p class="herd-item-desc">Todenham dry cured smoked streaky bacon served in a classic soft white roll.</p>
+                </div>
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Smoked salmon, scrambled eggs</span>
+                        <span class="herd-item-price">12.00</span>
+                    </div>
+                    <p class="herd-item-desc">Todenham dry cured smoked streaky bacon served in a classic soft white roll.</p>
+                </div>
+                 <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Homemade granola, seasonal fruits, yogurt</span>
+                        <span class="herd-item-price">8.00</span>
+                    </div>
+                    <p class="herd-item-desc">Todenham dry cured smoked streaky bacon served in a classic soft white roll.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content: Lunch -->
+        <div id="herd-lunch" class="herd-menu-section">
+            <h3 class="herd-section-title"><span>Farm Kitchen Lunch</span></h3>
+            <div class="herd-menu-grid">
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">The Herd Burger</span>
+                        <span class="herd-item-price">£16.00</span>
+                    </div>
+                    <p class="herd-item-desc">6oz dry-aged beef patty, smoked cheddar, bacon jam, pickles, and house slaw with skin-on fries.</p>
+                </div>
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Todenham Steak Sandwich</span>
+                        <span class="herd-item-price">£15.50</span>
+                    </div>
+                    <p class="herd-item-desc">Thinly sliced rump steak, caramelized onions, mustard mayo on ciabatta.</p>
+                </div>
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Seasonal Farm Salad</span>
+                        <span class="herd-item-price">£12.00</span>
+                    </div>
+                    <p class="herd-item-desc">Roasted squash, quinoa, feta, pomegranate, and toasted seeds with house dressing.</p>
+                </div>
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Butcher's Pie of the Day</span>
+                        <span class="herd-item-price">£14.00</span>
+                    </div>
+                    <p class="herd-item-desc">Homemade shortcrust pastry pie served with mash, seasonal greens, and gravy.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content: Coffee -->
+        <div id="herd-coffee" class="herd-menu-section">
+            <h3 class="herd-section-title"><span>Coffee &amp; Sweet Treats</span></h3>
+            <div class="herd-menu-grid">
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Artisan Flat White</span>
+                        <span class="herd-item-price">£3.20</span>
+                    </div>
+                    <p class="herd-item-desc">Locally roasted beans, served with farm fresh milk or oat alternative.</p>
+                </div>
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Cream Tea</span>
+                        <span class="herd-item-price">£7.50</span>
+                    </div>
+                    <p class="herd-item-desc">Two homemade scones, clotted cream, strawberry preserve, and a pot of tea.</p>
+                </div>
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Cake of the Day</span>
+                        <span class="herd-item-price">£4.00</span>
+                    </div>
+                    <p class="herd-item-desc">Ask your server for today's selection. (Gluten-free options available).</p>
+                </div>
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Luxury Hot Chocolate</span>
+                        <span class="herd-item-price">£4.00</span>
+                    </div>
+                    <p class="herd-item-desc">Topped with whipped cream, marshmallows, and chocolate shavings.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content: Sunday Roast -->
+        <div id="herd-sunday" class="herd-menu-section">
+            <h3 class="herd-section-title"><span>Sunday Roast</span></h3>
+            <div style="text-align: center; margin-bottom: 20px; color: #666;">Available Sundays 12pm - 4pm</div>
+            <div class="herd-menu-grid">
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Roast Topside of Beef</span>
+                        <span class="herd-item-price">£19.50</span>
+                    </div>
+                    <p class="herd-item-desc">Served pink with Yorkshire pudding, roast potatoes, seasonal vegetables, and red wine gravy.</p>
+                </div>
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Roast Leg of Todenham Pork</span>
+                        <span class="herd-item-price">£18.00</span>
+                    </div>
+                    <p class="herd-item-desc">With crispy crackling, apple sauce, and all the trimmings.</p>
+                </div>
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Slow-Roast Lamb Shoulder</span>
+                        <span class="herd-item-price">£19.00</span>
+                    </div>
+                    <p class="herd-item-desc">Tender farm lamb with mint sauce, roast potatoes, and greens.</p>
+                </div>
+                <div class="herd-menu-item">
+                    <div class="herd-item-header">
+                        <span class="herd-item-name">Nut Roast (V)</span>
+                        <span class="herd-item-price">£16.00</span>
+                    </div>
+                    <p class="herd-item-desc">Homemade nut roast with vegetarian gravy and all the trimmings.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content: Full Menu -->
+        <div id="herd-fullmenu" class="herd-menu-section">
+            <h3 class="herd-section-title"><span>Full Menu</span></h3>
+            <div class="herd-pdf-area">
+                <p style="margin-bottom: 20px; font-size: 1.1rem; margin-top: 0;">Prefer to see everything at once?</p>
+                <!-- IMPORTANT: Replace '#' below with your actual PDF link -->
+                <a href="#" class="herd-download-btn" target="_blank">Download Full PDF Menu</a>
+                <p style="margin-top: 20px; font-size: 0.9rem; color: #666; margin-bottom: 0;">Includes our wine list and allergens.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        (function() {
+            var herdInit = function() {
+                var wrapper = document.getElementById('herd-unique-menu-wrapper');
+                if (!wrapper) return;
+    
+                var buttons = wrapper.getElementsByClassName('herd-tab-btn');
+                var sections = wrapper.getElementsByClassName('herd-menu-section');
+    
+                function switchTab(e) {
+                    e.preventDefault();
+                    var clickedBtn = e.target; // Safe target
+                    var targetId = clickedBtn.getAttribute('data-target');
+                    
+                    // Reset all buttons
+                    for (var i = 0; i < buttons.length; i++) {
+                        buttons[i].classList.remove('active');
+                    }
+                    
+                    // Hide all sections
+                    for (var j = 0; j < sections.length; j++) {
+                        sections[j].style.display = 'none';
+                        sections[j].classList.remove('active');
+                    }
+                    
+                    // Activate clicked button
+                    clickedBtn.classList.add('active');
+                    
+                    // Show target section
+                    var targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+                        setTimeout(function(){
+                            targetSection.classList.add('active');
+                        }, 10);
+                    }
+                }
+    
+                // Add click listeners
+                for (var k = 0; k < buttons.length; k++) {
+                    buttons[k].onclick = switchTab;
+                }
+            };
+    
+            // Initialize immediately if DOM is ready
+            herdInit();
+    
+            // Also attempt to init after a slight delay for AJAX loads
+            setTimeout(herdInit, 500);
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', herdInit);
+            }
+        })();
+    </script>
+</div>
+<!-- END THE HERD MENU WIDGET -->

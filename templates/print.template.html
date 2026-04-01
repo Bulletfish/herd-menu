@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Herd Menu — Todenham Manor Farm</title>
+<style>
+  :root {
+    --green: #2F5233;
+    --green-mid: #3d6b45;
+    --text: #1a1a1a;
+    --muted: #555;
+    --rule: #b5c9b8;
+    --font-heading: 'Courier New', Courier, monospace;
+    --font-body: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    background: #fff;
+    color: var(--text);
+    font-size: 13px;
+  }
+
+  /* Print button — screen only */
+  .print-bar {
+    background: var(--green);
+    color: #fff;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+  .print-bar span { opacity: 0.75; }
+  .print-bar button {
+    background: #fff;
+    color: var(--green);
+    border: none;
+    padding: 7px 18px;
+    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* Page */
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 20px auto;
+    background: #fff;
+    padding: 18mm 20mm 16mm;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.12);
+  }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 6mm; }
+
+  .brand-logo {
+    display: block;
+    width: 62mm;
+    margin: 0 auto 4mm;
+  }
+
+  .header-rule {
+    width: 36px;
+    height: 2px;
+    background: var(--green);
+    margin: 0 auto 5mm;
+    border: none;
+  }
+
+  .tagline {
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 8.5pt;
+    color: var(--muted);
+    text-align: center;
+    max-width: 120mm;
+    margin: 0 auto 8mm;
+    line-height: 1.65;
+  }
+
+  /* Sections */
+  .section { margin-bottom: 7mm; }
+
+  .section-header {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 9pt;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    text-transform: uppercase;
+    margin-bottom: 2.5mm;
+  }
+
+  .section-rule {
+    border: none;
+    border-top: 1.5px solid var(--rule);
+    margin-bottom: 3mm;
+  }
+
+  /* Item rows */
+  .item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2mm;
+    gap: 8px;
+  }
+
+  .item-name {
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 9pt;
+    color: var(--text);
+    flex: 1;
+    line-height: 1.4;
+  }
+
+  .item-price {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 9pt;
+    color: var(--text);
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 22px;
+    text-align: right;
+  }
+
+  .item-note {
+    font-family: var(--font-body);
+    font-size: 8pt;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 0.5mm;
+    margin-bottom: 1.5mm;
+    padding-left: 0;
+  }
+
+  /* Bottom rule + footer */
+  .footer-rule {
+    border: none;
+    border-top: 1.5px solid var(--rule);
+    margin: 8mm 0 5mm;
+  }
+
+  .footer {
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 7.5pt;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* ── Print styles ─────────────────────────────────── */
+  @media print {
+    @page { size: A4 portrait; margin: 0; }
+    body { background: #fff; }
+    .print-bar { display: none; }
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 16mm 18mm 14mm;
+      box-shadow: none;
+    }
+    .section { page-break-inside: avoid; }
+  }
+
+  @media (max-width: 240mm) {
+    .page { width: 100%; margin: 0; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-bar">
+  <span>Print preview — Herd Menu</span>
+  <button onclick="window.print()">Save as PDF / Print</button>
+</div>
+
+<div class="page" id="menu-page">
+  <!-- Injected by server -->
+</div>
+
+<script>
+var MENU = __MENU_DATA__;
+
+function formatPrice(p) {
+  var n = parseFloat(p);
+  if (!n) return '';
+  return n % 1 === 0 ? String(n) : n.toFixed(2).replace(/\.?0+$/, '');
+}
+
+function render(menu) {
+  var page = document.getElementById('menu-page');
+  var html = '';
+
+  // Header
+  html += '<div class="header">';
+  html += '<img src="/assets/herd-brand.png" class="brand-logo" alt="Herd at Todenham Manor Farm">';
+  html += '<hr class="header-rule">';
+  html += '<p class="tagline">' + esc(menu.meta.tagline) + '</p>';
+  html += '</div>';
+
+  // Sections
+  menu.sections.forEach(function(section) {
+    html += '<div class="section">';
+    html += '<div class="section-header">' + esc(section.name) + '</div>';
+    html += '<hr class="section-rule">';
+    section.items.forEach(function(item) {
+      html += '<div class="item">';
+      html += '<span class="item-name">' + esc(item.name) + '</span>';
+      html += '<span class="item-price">' + formatPrice(item.price) + '</span>';
+      html += '</div>';
+      if (item.description) {
+        html += '<div class="item-note">' + esc(item.description) + '</div>';
+      }
+    });
+    html += '</div>';
+  });
+
+  // Footer
+  html += '<hr class="footer-rule">';
+  html += '<p class="footer">' + esc(menu.meta.footer) + '</p>';
+
+  page.innerHTML = html;
+}
+
+function esc(str) {
+  return String(str || '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+render(MENU);
+</script>
+</body>
+</html>
