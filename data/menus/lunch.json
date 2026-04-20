@@ -22,7 +22,9 @@
           "price": 6,
           "description": ""
         }
-      ]
+      ],
+      "layout": "full",
+      "subtitle": ""
     },
     {
       "id": "small-plates",

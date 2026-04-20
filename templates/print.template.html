@@ -7,7 +7,6 @@
 <style>
   :root {
     --green: #2F5233;
-    --green-mid: #3d6b45;
     --text: #1a1a1a;
     --muted: #555;
     --rule: #b5c9b8;
@@ -24,29 +23,19 @@
     font-size: 13px;
   }
 
-  /* Print button — screen only */
+  /* ── Screen-only print bar ───────────────────────────── */
   .print-bar {
-    background: var(--green);
-    color: #fff;
-    padding: 12px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 13px;
+    background: var(--green); color: #fff;
+    padding: 12px 24px; display: flex;
+    align-items: center; justify-content: space-between; font-size: 13px;
   }
   .print-bar span { opacity: 0.75; }
   .print-bar button {
-    background: #fff;
-    color: var(--green);
-    border: none;
-    padding: 7px 18px;
-    border-radius: 5px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
+    background: #fff; color: var(--green); border: none;
+    padding: 7px 18px; border-radius: 5px; font-size: 13px; font-weight: 600; cursor: pointer;
   }
 
-  /* Page */
+  /* ── A4 page shell ───────────────────────────────────── */
   .page {
     width: 210mm;
     min-height: 297mm;
@@ -54,128 +43,112 @@
     background: #fff;
     padding: 18mm 20mm 16mm;
     box-shadow: 0 4px 30px rgba(0,0,0,0.12);
+    /* Flex column so footer is always pushed to the bottom */
+    display: flex;
+    flex-direction: column;
   }
 
-  /* Header */
+  /* Content area grows to fill all available space */
+  .page-content { flex: 1; }
+
+  /* ── Header ──────────────────────────────────────────── */
   .header { text-align: center; margin-bottom: 6mm; }
 
-  .brand-logo {
-    display: block;
-    width: 62mm;
-    margin: 0 auto 4mm;
-  }
+  .brand-logo { display: block; width: 62mm; margin: 0 auto 4mm; }
 
   .header-rule {
-    width: 36px;
-    height: 2px;
-    background: var(--green);
-    margin: 0 auto 5mm;
-    border: none;
+    width: 36px; height: 2px; background: var(--green);
+    margin: 0 auto 5mm; border: none;
   }
 
   .tagline {
-    font-family: var(--font-body);
-    font-weight: 300;
-    font-size: 8.5pt;
-    color: var(--muted);
-    text-align: center;
-    max-width: 120mm;
-    margin: 0 auto 8mm;
-    line-height: 1.65;
+    font-family: var(--font-body); font-weight: 300; font-size: 8.5pt;
+    color: var(--muted); text-align: center;
+    max-width: 120mm; margin: 0 auto 8mm; line-height: 1.65;
   }
 
-  /* Sections */
-  .section { margin-bottom: 7mm; }
+  /* ── Section rows (multi-column grouping) ────────────── */
+  .section-row {
+    display: flex;
+    gap: 8mm;
+    margin-bottom: 7mm;
+    align-items: flex-start;  /* don't stretch short columns */
+  }
+  /* A section inside a row fills its fair share */
+  .section-row .section { flex: 1; margin-bottom: 0; }
+
+  /* ── Individual section ──────────────────────────────── */
+  .section { margin-bottom: 7mm; page-break-inside: avoid; }
 
   .section-header {
-    font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: 9pt;
-    letter-spacing: 0.1em;
-    color: var(--text);
-    text-transform: uppercase;
-    margin-bottom: 2.5mm;
+    font-family: var(--font-heading); font-weight: 700; font-size: 9pt;
+    letter-spacing: 0.1em; color: var(--text);
+    text-transform: uppercase; margin-bottom: 2.5mm;
   }
 
   .section-rule {
-    border: none;
-    border-top: 1.5px solid var(--rule);
-    margin-bottom: 3mm;
+    border: none; border-top: 1.5px solid var(--rule); margin-bottom: 2.5mm;
   }
 
-  /* Item rows */
+  /* Italic subtitle under section header (e.g. "Teapigs Herbal Teas") */
+  .section-subtitle {
+    font-family: var(--font-body); font-size: 8pt;
+    font-style: italic; color: var(--muted); margin-bottom: 3mm;
+  }
+
+  /* ── Item rows ───────────────────────────────────────── */
   .item {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 2mm;
-    gap: 8px;
+    display: flex; justify-content: space-between;
+    align-items: baseline; margin-bottom: 2mm; gap: 6px;
   }
 
   .item-name {
-    font-family: var(--font-body);
-    font-weight: 300;
-    font-size: 9pt;
-    color: var(--text);
-    flex: 1;
-    line-height: 1.4;
+    font-family: var(--font-body); font-weight: 300; font-size: 9pt;
+    color: var(--text); flex: 1; line-height: 1.4;
   }
 
   .item-price {
-    font-family: var(--font-body);
-    font-weight: 400;
-    font-size: 9pt;
-    color: var(--text);
-    white-space: nowrap;
-    flex-shrink: 0;
-    min-width: 22px;
-    text-align: right;
+    font-family: var(--font-body); font-weight: 400; font-size: 9pt;
+    color: var(--text); white-space: nowrap; flex-shrink: 0;
+    min-width: 16px; text-align: right;
   }
 
   .item-note {
-    font-family: var(--font-body);
-    font-size: 8pt;
-    color: var(--muted);
-    font-style: italic;
-    margin-top: 0.5mm;
-    margin-bottom: 1.5mm;
-    padding-left: 0;
+    font-family: var(--font-body); font-size: 8pt;
+    color: var(--muted); font-style: italic;
+    margin-top: 0.5mm; margin-bottom: 1.5mm;
   }
 
-  /* Bottom rule + footer */
+  /* ── Footer — always at bottom of page ──────────────── */
+  .footer-area { margin-top: 6mm; }
+
   .footer-rule {
-    border: none;
-    border-top: 1.5px solid var(--rule);
-    margin: 8mm 0 5mm;
+    border: none; border-top: 1.5px solid var(--rule); margin-bottom: 5mm;
   }
 
   .footer {
-    font-family: var(--font-body);
-    font-weight: 300;
-    font-size: 7.5pt;
-    color: var(--muted);
-    text-align: center;
-    line-height: 1.6;
-    font-style: italic;
+    font-family: var(--font-body); font-weight: 300; font-size: 7.5pt;
+    color: var(--muted); text-align: center; line-height: 1.6; font-style: italic;
   }
 
-  /* ── Print styles ─────────────────────────────────── */
+  /* ── Print media ─────────────────────────────────────── */
   @media print {
     @page { size: A4 portrait; margin: 0; }
     body { background: #fff; }
     .print-bar { display: none; }
     .page {
-      width: 100%;
-      min-height: 100vh;
-      margin: 0;
-      padding: 16mm 18mm 14mm;
+      width: 100%; height: 100vh;   /* exact page height for correct footer placement */
+      margin: 0; padding: 16mm 18mm 14mm;
       box-shadow: none;
     }
+    .section-row { page-break-inside: avoid; }
     .section { page-break-inside: avoid; }
   }
 
   @media (max-width: 240mm) {
     .page { width: 100%; margin: 0; box-shadow: none; }
+    /* Stack multi-column sections on very narrow screens */
+    .section-row { flex-direction: column; }
   }
 </style>
 </head>
@@ -187,60 +160,105 @@
 </div>
 
 <div class="page" id="menu-page">
-  <!-- Injected by server -->
+  <!-- rendered by script below -->
 </div>
 
 <script>
 var MENU = __MENU_DATA__;
 
-function formatPrice(p) {
+function fmt(p) {
   var n = parseFloat(p);
   if (!n) return '';
   return n % 1 === 0 ? String(n) : n.toFixed(2).replace(/\.?0+$/, '');
+}
+
+function esc(str) {
+  return String(str || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* Group consecutive sections by layout so they can share a flex row.
+   Returns an array of rows, each with { layout, sections[] }          */
+function groupSections(sections) {
+  var rows = [], i = 0;
+  while (i < sections.length) {
+    var layout = sections[i].layout || 'full';
+    if (layout === 'full') {
+      rows.push({ layout: 'full', sections: [sections[i]] });
+      i++;
+    } else {
+      var group = [];
+      while (i < sections.length && (sections[i].layout || 'full') === layout) {
+        group.push(sections[i]);
+        i++;
+      }
+      rows.push({ layout: layout, sections: group });
+    }
+  }
+  return rows;
+}
+
+function renderSection(section) {
+  var html = '<div class="section">';
+  html += '<div class="section-header">' + esc(section.name) + '</div>';
+  html += '<hr class="section-rule">';
+  if (section.subtitle) {
+    html += '<div class="section-subtitle">' + esc(section.subtitle) + '</div>';
+  }
+  section.items.forEach(function(item) {
+    html += '<div class="item">';
+    html += '<span class="item-name">' + esc(item.name) + '</span>';
+    if (item.price) html += '<span class="item-price">' + fmt(item.price) + '</span>';
+    html += '</div>';
+    if (item.description) {
+      html += '<div class="item-note">' + esc(item.description) + '</div>';
+    }
+  });
+  html += '</div>';
+  return html;
 }
 
 function render(menu) {
   var page = document.getElementById('menu-page');
   var html = '';
 
+  /* ── Content area ── */
+  html += '<div class="page-content">';
+
   // Header
   html += '<div class="header">';
   var logoUrl = menu.meta && menu.meta.logoUrl ? menu.meta.logoUrl : '/assets/herd-brand.png';
-  html += '<img src="' + logoUrl + '" class="brand-logo" alt="Herd at Todenham Manor Farm">';
+  html += '<img src="' + esc(logoUrl) + '" class="brand-logo" alt="Herd at Todenham Manor Farm">';
   html += '<hr class="header-rule">';
-  html += '<p class="tagline">' + esc(menu.meta.tagline) + '</p>';
+  if (menu.meta && menu.meta.tagline) {
+    html += '<p class="tagline">' + esc(menu.meta.tagline) + '</p>';
+  }
   html += '</div>';
 
-  // Sections
-  menu.sections.forEach(function(section) {
-    html += '<div class="section">';
-    html += '<div class="section-header">' + esc(section.name) + '</div>';
-    html += '<hr class="section-rule">';
-    section.items.forEach(function(item) {
-      html += '<div class="item">';
-      html += '<span class="item-name">' + esc(item.name) + '</span>';
-      html += '<span class="item-price">' + formatPrice(item.price) + '</span>';
+  // Sections — grouped into rows by layout
+  var rows = groupSections(menu.sections || []);
+  rows.forEach(function(row) {
+    if (row.layout === 'full') {
+      html += renderSection(row.sections[0]);
+    } else {
+      html += '<div class="section-row">';
+      row.sections.forEach(function(s) { html += renderSection(s); });
       html += '</div>';
-      if (item.description) {
-        html += '<div class="item-note">' + esc(item.description) + '</div>';
-      }
-    });
-    html += '</div>';
+    }
   });
 
-  // Footer
-  html += '<hr class="footer-rule">';
-  html += '<p class="footer">' + esc(menu.meta.footer) + '</p>';
+  html += '</div>'; // end .page-content
+
+  /* ── Footer — pinned to bottom by flex ── */
+  if (menu.meta && menu.meta.footer) {
+    html += '<div class="footer-area">';
+    html += '<hr class="footer-rule">';
+    html += '<p class="footer">' + esc(menu.meta.footer) + '</p>';
+    html += '</div>';
+  }
 
   page.innerHTML = html;
-}
-
-function esc(str) {
-  return String(str || '')
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
 }
 
 render(MENU);

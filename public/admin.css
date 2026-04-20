@@ -134,6 +134,30 @@ a { color: inherit; text-decoration: none; }
 .drag-handle { cursor: grab; color: var(--muted); font-size: 16px; user-select: none; }
 .drag-handle:active { cursor: grabbing; }
 
+/* ── Section meta row (layout + subtitle) ───────────────── */
+.section-meta {
+  display: flex;
+  gap: 16px;
+  padding: 8px 18px 8px;
+  background: #fafcfa;
+  border-bottom: 1px solid var(--border);
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.section-meta-field { display: flex; flex-direction: column; gap: 3px; }
+.section-meta-field label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.section-meta-field select,
+.section-meta-field input[type="text"] {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 5px 8px; font-size: 12px; font-family: inherit; color: var(--text);
+  background: #fff; outline: none; transition: border-color .15s;
+}
+.section-meta-field select { width: 130px; }
+.section-meta-field select:focus,
+.section-meta-field input[type="text"]:focus { border-color: var(--green); }
+.section-meta-subtitle { flex: 1; min-width: 200px; }
+.section-meta-subtitle input { width: 100%; }
+
 .items-header { display: grid; grid-template-columns: 1fr 80px 1fr 32px; gap: 8px; padding: 4px 18px 2px; }
 .items-header span { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
 .items-list { padding: 6px 0; }

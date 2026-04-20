@@ -228,12 +228,29 @@ function buildSectionCard(section, si) {
     }
   });
 
+  const layout = section.layout || 'full';
+  const subtitle = section.subtitle || '';
   card.innerHTML = `
     <div class="card-header">
       <span class="drag-handle" title="Drag to reorder">⠿</span>
       <input class="section-name-input" value="${esc(section.name)}" placeholder="SECTION NAME"
         onchange="currentMenu.sections[${si}].name=this.value.toUpperCase();this.value=this.value.toUpperCase();">
       <button class="btn-icon" onclick="deleteSection(${si})">✕</button>
+    </div>
+    <div class="section-meta">
+      <div class="section-meta-field">
+        <label>Print layout</label>
+        <select onchange="currentMenu.sections[${si}].layout=this.value">
+          <option value="full"  ${layout==='full' ?'selected':''}>Full width</option>
+          <option value="half"  ${layout==='half' ?'selected':''}>Half width</option>
+          <option value="third" ${layout==='third'?'selected':''}>One third</option>
+        </select>
+      </div>
+      <div class="section-meta-field section-meta-subtitle">
+        <label>Subtitle <span style="font-weight:400;opacity:.6;">(optional italic line, e.g. "Teapigs Herbal Teas")</span></label>
+        <input type="text" value="${esc(subtitle)}" placeholder="Leave blank if not needed"
+          onchange="currentMenu.sections[${si}].subtitle=this.value.trim();">
+      </div>
     </div>
     <div class="items-header">
       <span>Item</span><span>Price</span><span class="col-desc">Note / Add-on</span><span></span>
