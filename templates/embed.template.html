@@ -1,4 +1,7 @@
 <!-- START THE HERD MENU WIDGET -->
+<!-- LIVE MODE (future auto-publish): replace `var MENU=__MENU_DATA__;` with:
+     fetch('/api/embed-data/SLUG').then(r=>r.json()).then(function(d){MENU=d;render();});
+     and remove the var MENU line. The /api/embed-data/:slug endpoint is already live. -->
 <style>
 #herd-menu-widget*{box-sizing:border-box;margin:0;padding:0}
 #herd-menu-widget{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;background:#F9F7F2;border-radius:8px;overflow:hidden;max-width:780px;margin:0 auto}

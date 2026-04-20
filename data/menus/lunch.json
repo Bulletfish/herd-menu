@@ -1,10 +1,12 @@
 {
-  "meta": {
-    "tagline": "From our farm to your table, our meat is reared with care on our land, while other ingredients are sourced from trusted local growers. Inspired by our Head Chef Chris's passion for British and global flavours, our menu reflects sustainability, seasonality, and honest cooking.",
-    "footer": "Our team will gladly accommodate allergies and dietary requirements wherever possible; please speak to us if you require any variation to the dishes. A discretionary 12.5% service charge will be added to your bill. We ask that no picnics be consumed at tables.",
-    "logoUrl": "https://cdn.jsdelivr.net/gh/Bulletfish/herd-menu@main/public/assets/herd-brand.png",
-    "lastUpdated": "2026-04-01"
-  },
+  "id": "lunch",
+  "title": "Lunch",
+  "slug": "lunch",
+  "status": "active",
+  "tagline": "",
+  "footer": "",
+  "publishedAt": null,
+  "lastUpdated": "2026-04-01",
   "sections": [
     {
       "id": "nibbles",

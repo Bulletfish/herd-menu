@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Herd Menu — Todenham Manor Farm</title>
+<title>__MENU_TITLE__ — Herd at Todenham Manor Farm</title>
 <style>
   :root {
     --green: #2F5233;
@@ -182,7 +182,7 @@
 <body>
 
 <div class="print-bar">
-  <span>Print preview — Herd Menu</span>
+  <span>Print preview — __MENU_TITLE__</span>
   <button onclick="window.print()">Save as PDF / Print</button>
 </div>
 
@@ -205,7 +205,8 @@ function render(menu) {
 
   // Header
   html += '<div class="header">';
-  html += '<img src="/assets/herd-brand.png" class="brand-logo" alt="Herd at Todenham Manor Farm">';
+  var logoUrl = menu.meta && menu.meta.logoUrl ? menu.meta.logoUrl : '/assets/herd-brand.png';
+  html += '<img src="' + logoUrl + '" class="brand-logo" alt="Herd at Todenham Manor Farm">';
   html += '<hr class="header-rule">';
   html += '<p class="tagline">' + esc(menu.meta.tagline) + '</p>';
   html += '</div>';
