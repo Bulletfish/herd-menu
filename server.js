@@ -4,15 +4,37 @@ const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+// DATA_DIR lets Railway (or any host) point at a persistent volume.
+// Locally it defaults to the repo's data/ folder so nothing changes.
+const DATA_DIR   = process.env.DATA_DIR || path.join(__dirname, 'data');
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, 'public', 'uploads');
-const MENUS_DIR = path.join(__dirname, 'data', 'menus');
-const SETTINGS_FILE = path.join(__dirname, 'data', 'settings.json');
+const MENUS_DIR  = path.join(DATA_DIR, 'menus');
+const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
 const TEMPLATES_DIR = path.join(__dirname, 'templates');
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || null;
 
 // ── Startup ───────────────────────────────────────────────────────────────────
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 fs.mkdirSync(MENUS_DIR, { recursive: true });
+
+// Seed a fresh persistent volume from the repo's data/ on first run.
+// Only runs when DATA_DIR differs from the local data/ path (i.e. on Railway).
+const LOCAL_DATA = path.join(__dirname, 'data');
+if (DATA_DIR !== LOCAL_DATA) {
+  const localSettings = path.join(LOCAL_DATA, 'settings.json');
+  if (!fs.existsSync(SETTINGS_FILE) && fs.existsSync(localSettings)) {
+    fs.copyFileSync(localSettings, SETTINGS_FILE);
+    console.log('Seeded settings.json from repo defaults.');
+  }
+  const localMenus = path.join(LOCAL_DATA, 'menus');
+  if (fs.existsSync(localMenus) && fs.readdirSync(MENUS_DIR).length === 0) {
+    fs.readdirSync(localMenus).filter(f => f.endsWith('.json')).forEach(f => {
+      fs.copyFileSync(path.join(localMenus, f), path.join(MENUS_DIR, f));
+    });
+    console.log('Seeded menus/ from repo defaults.');
+  }
+}
+
 if (!fs.existsSync(SETTINGS_FILE)) {
   fs.writeFileSync(SETTINGS_FILE, JSON.stringify({
     logoPath: '/assets/herd-brand.png', tagline: '', footer: '', lastUpdated: today()
