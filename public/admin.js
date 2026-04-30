@@ -362,6 +362,16 @@ async function saveMenu() {
 // ════════════════════════════════════════════════════════════════════════════
 // SETTINGS
 // ════════════════════════════════════════════════════════════════════════════
+const BODY_FONTS = [
+  { label: 'Helvetica / Arial (default)', value: "'Helvetica Neue', Helvetica, Arial, sans-serif" },
+  { label: 'Georgia', value: "Georgia, 'Times New Roman', serif" },
+  { label: 'Times New Roman', value: "'Times New Roman', Times, serif" },
+  { label: 'Palatino', value: "'Palatino Linotype', Palatino, 'Book Antiqua', serif" },
+  { label: 'Gill Sans', value: "'Gill Sans', 'Gill Sans MT', Calibri, sans-serif" },
+  { label: 'Trebuchet MS', value: "'Trebuchet MS', Tahoma, Geneva, sans-serif" },
+  { label: 'Garamond', value: "Garamond, 'Times New Roman', serif" },
+];
+
 async function showSettings() {
   settings = await fetch('/api/settings').then(r => r.json());
   const logoSrc = settings.logoPath
@@ -388,6 +398,24 @@ async function showSettings() {
       </div>
     </div>
     <div class="card">
+      <div class="card-header"><span style="font-weight:700;color:var(--green);font-size:13px;letter-spacing:.06em;text-transform:uppercase;">Fonts</span></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;">
+          <div class="field" style="margin:0">
+            <label>Body font</label>
+            <select id="s-bodyfont" onchange="previewBodyFont(this.value)">
+              ${BODY_FONTS.map(f => `<option value="${esc(f.value)}"${(settings.bodyFont||BODY_FONTS[0].value)===f.value?' selected':''}>${esc(f.label)}</option>`).join('')}
+            </select>
+            <p class="hint">Used for item names, descriptions, and taglines on printed menus.</p>
+          </div>
+          <div style="padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);background:#fafcfa;" id="font-preview">
+            <p style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;">Preview</p>
+            <p id="font-preview-text" style="font-size:14px;line-height:1.6;font-family:${esc(settings.bodyFont||BODY_FONTS[0].value)}">Fried chicken, sriracha, hot honey &nbsp; <span style="color:var(--muted);font-style:italic;font-size:12px;">Grass-fed, served with fries</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
       <div class="card-header"><span style="font-weight:700;color:var(--green);font-size:13px;letter-spacing:.06em;text-transform:uppercase;">Global Defaults</span></div>
       <div class="card-body settings-grid">
         <div class="field" style="margin:0">
@@ -403,6 +431,11 @@ async function showSettings() {
       </div>
     </div>
   </div>`;
+}
+
+function previewBodyFont(value) {
+  const el = document.getElementById('font-preview-text');
+  if (el) el.style.fontFamily = value;
 }
 
 async function uploadLogo() {
@@ -422,6 +455,7 @@ async function uploadLogo() {
 async function saveSettings() {
   settings.tagline = document.getElementById('s-tagline')?.value.trim() || '';
   settings.footer = document.getElementById('s-footer')?.value.trim() || '';
+  settings.bodyFont = document.getElementById('s-bodyfont')?.value || BODY_FONTS[0].value;
   const res = await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings) });
   const data = await res.json();
   if (data.ok) { showToast('Settings saved'); }

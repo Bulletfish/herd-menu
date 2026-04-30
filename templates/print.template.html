@@ -54,12 +54,7 @@
   /* ── Header ──────────────────────────────────────────── */
   .header { text-align: center; margin-bottom: 6mm; }
 
-  .brand-logo { display: block; width: 62mm; margin: 0 auto 4mm; }
-
-  .header-rule {
-    width: 36px; height: 2px; background: var(--green);
-    margin: 0 auto 5mm; border: none;
-  }
+  .brand-logo { display: block; width: 62mm; margin: 0 auto 5mm; }
 
   .tagline {
     font-family: var(--font-body); font-weight: 300; font-size: 8.5pt;
@@ -225,6 +220,11 @@ function render(menu) {
   var showDividers = menu.showDividers !== false;
   var logoWidthMm = (menu.logoScale || 62) + 'mm';
 
+  // Apply body font from settings
+  if (menu.meta && menu.meta.bodyFont) {
+    document.documentElement.style.setProperty('--font-body', menu.meta.bodyFont);
+  }
+
   /* ── Content area ── */
   html += '<div class="page-content">';
 
@@ -232,7 +232,6 @@ function render(menu) {
   html += '<div class="header">';
   var logoUrl = menu.meta && menu.meta.logoUrl ? menu.meta.logoUrl : '/assets/herd-brand.png';
   html += '<img src="' + esc(logoUrl) + '" class="brand-logo" style="width:' + logoWidthMm + '" alt="Herd at Todenham Manor Farm">';
-  if (showDividers) html += '<hr class="header-rule">';
   if (menu.meta && menu.meta.tagline) {
     html += '<p class="tagline">' + esc(menu.meta.tagline) + '</p>';
   }

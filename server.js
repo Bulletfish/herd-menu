@@ -90,7 +90,8 @@ function mergedMenu(menu, settings) {
     meta: {
       logoUrl: '',  // filled at render time
       tagline: menu.tagline || settings.tagline || '',
-      footer: menu.footer || settings.footer || ''
+      footer: menu.footer || settings.footer || '',
+      bodyFont: settings.bodyFont || "'Helvetica Neue', Helvetica, Arial, sans-serif"
     }
   };
 }
