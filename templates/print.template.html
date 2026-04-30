@@ -199,10 +199,10 @@ function groupSections(sections) {
   return rows;
 }
 
-function renderSection(section) {
+function renderSection(section, showDividers) {
   var html = '<div class="section">';
   html += '<div class="section-header">' + esc(section.name) + '</div>';
-  html += '<hr class="section-rule">';
+  if (showDividers !== false) html += '<hr class="section-rule">';
   if (section.subtitle) {
     html += '<div class="section-subtitle">' + esc(section.subtitle) + '</div>';
   }
@@ -222,6 +222,8 @@ function renderSection(section) {
 function render(menu) {
   var page = document.getElementById('menu-page');
   var html = '';
+  var showDividers = menu.showDividers !== false;
+  var logoWidthMm = (menu.logoScale || 62) + 'mm';
 
   /* ── Content area ── */
   html += '<div class="page-content">';
@@ -229,8 +231,8 @@ function render(menu) {
   // Header
   html += '<div class="header">';
   var logoUrl = menu.meta && menu.meta.logoUrl ? menu.meta.logoUrl : '/assets/herd-brand.png';
-  html += '<img src="' + esc(logoUrl) + '" class="brand-logo" alt="Herd at Todenham Manor Farm">';
-  html += '<hr class="header-rule">';
+  html += '<img src="' + esc(logoUrl) + '" class="brand-logo" style="width:' + logoWidthMm + '" alt="Herd at Todenham Manor Farm">';
+  if (showDividers) html += '<hr class="header-rule">';
   if (menu.meta && menu.meta.tagline) {
     html += '<p class="tagline">' + esc(menu.meta.tagline) + '</p>';
   }
@@ -240,10 +242,10 @@ function render(menu) {
   var rows = groupSections(menu.sections || []);
   rows.forEach(function(row) {
     if (row.layout === 'full') {
-      html += renderSection(row.sections[0]);
+      html += renderSection(row.sections[0], showDividers);
     } else {
       html += '<div class="section-row">';
-      row.sections.forEach(function(s) { html += renderSection(s); });
+      row.sections.forEach(function(s) { html += renderSection(s, showDividers); });
       html += '</div>';
     }
   });
@@ -253,7 +255,7 @@ function render(menu) {
   /* ── Footer — pinned to bottom by flex ── */
   if (menu.meta && menu.meta.footer) {
     html += '<div class="footer-area">';
-    html += '<hr class="footer-rule">';
+    if (showDividers) html += '<hr class="footer-rule">';
     html += '<p class="footer">' + esc(menu.meta.footer) + '</p>';
     html += '</div>';
   }

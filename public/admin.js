@@ -194,6 +194,19 @@ function renderEditor() {
             <textarea id="ed-footer" rows="3" placeholder="Leave blank to use global default">${esc(m.footer||'')}</textarea>
           </div>
         </div>
+        <div style="display:flex;align-items:center;gap:32px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);flex-wrap:wrap;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;user-select:none;">
+            <input type="checkbox" id="ed-dividers" ${(m.showDividers !== false) ? 'checked' : ''}>
+            Show section divider lines
+          </label>
+          <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:220px;">
+            <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);white-space:nowrap;">Logo size</span>
+            <input type="range" id="ed-logo-scale" min="30" max="120" step="5" value="${m.logoScale || 62}"
+              style="flex:1;accent-color:var(--green);"
+              oninput="document.getElementById('logo-scale-val').textContent=this.value+'mm'">
+            <span id="logo-scale-val" style="font-size:12px;color:var(--muted);min-width:38px;text-align:right;">${m.logoScale || 62}mm</span>
+          </div>
+        </div>
       </div>
     </div>
     <div id="sections-container"></div>
@@ -323,6 +336,8 @@ async function saveMenu() {
   currentMenu.status = document.getElementById('ed-status')?.value || currentMenu.status;
   currentMenu.tagline = document.getElementById('ed-tagline')?.value.trim() || '';
   currentMenu.footer = document.getElementById('ed-footer')?.value.trim() || '';
+  currentMenu.showDividers = document.getElementById('ed-dividers')?.checked ?? true;
+  currentMenu.logoScale = parseInt(document.getElementById('ed-logo-scale')?.value) || 62;
 
   const statusEl = document.getElementById('save-status');
   if (statusEl) statusEl.textContent = 'Saving…';
