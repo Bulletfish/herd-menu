@@ -128,6 +128,26 @@ function renderTemplate(name, vars) {
 app.get('/', (req, res) => res.redirect('/admin'));
 app.get('/admin', requireAuth, (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
 
+// Storage diagnostic — open this URL after deploy to verify persistence is configured
+app.get('/api/status', requireAuth, (req, res) => {
+  const LOCAL_DATA_ABS = path.resolve(path.join(__dirname, 'data'));
+  const DATA_DIR_ABS   = path.resolve(DATA_DIR);
+  const usingVolume    = DATA_DIR_ABS !== LOCAL_DATA_ABS;
+  const menusExist     = fs.existsSync(MENUS_DIR);
+  const menuFiles      = menusExist ? fs.readdirSync(MENUS_DIR).filter(f => f.endsWith('.json')) : [];
+  res.json({
+    status:       usingVolume ? 'OK — persistent volume in use' : 'WARNING — no volume, data resets on every deploy',
+    usingVolume,
+    DATA_DIR:     DATA_DIR_ABS,
+    MENUS_DIR:    path.resolve(MENUS_DIR),
+    SETTINGS_FILE: path.resolve(SETTINGS_FILE),
+    UPLOAD_DIR:   path.resolve(UPLOAD_DIR),
+    menusFound:   menuFiles,
+    menusCount:   menuFiles.length,
+    fix: usingVolume ? null : 'In Railway: add a Volume mounted at /data, then set env var DATA_DIR=/data and redeploy'
+  });
+});
+
 // Settings
 app.get('/api/settings', requireAuth, (req, res) => res.json(readSettings()));
 
