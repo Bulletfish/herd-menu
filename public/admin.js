@@ -33,6 +33,7 @@ async function showDashboard() {
   setTopbar({
     title: 'Herd Menu Admin',
     right: `
+      <button class="btn btn-ghost btn-sm" onclick="openCombinedEmbedModal()">⟨/⟩ Website Embed</button>
       <a href="#/settings" class="btn btn-ghost btn-sm">⚙ Settings</a>
       <button class="btn btn-primary btn-sm" onclick="openNewMenuModal()">+ New Menu</button>
     `
@@ -66,6 +67,9 @@ async function showDashboard() {
 function menuCard(m) {
   const badge = `<span class="badge badge-${m.status}">${m.status}</span>`;
   const updated = m.lastUpdated ? `Updated ${m.lastUpdated}` : '';
+  const embedTag = m.showInEmbed
+    ? `<span style="font-size:10px;font-weight:700;color:var(--green);letter-spacing:.04em;white-space:nowrap;">⟨/⟩ In embed</span>`
+    : '';
   return `
     <div class="menu-card ${m.status === 'archived' ? 'archived' : ''}">
       <div class="menu-card-body">
@@ -73,12 +77,11 @@ function menuCard(m) {
           <div class="menu-card-title">${esc(m.title)}</div>
           ${badge}
         </div>
-        <div class="menu-card-meta">${updated}</div>
+        <div class="menu-card-meta" style="display:flex;align-items:center;justify-content:space-between;">${updated}${embedTag}</div>
       </div>
       <div class="menu-card-actions">
         <button class="btn btn-green btn-sm" onclick="nav('/editor/${m.slug}')">Edit</button>
         <button class="btn btn-ghost btn-sm" style="background:#f0f4f0;color:var(--green);border-color:var(--border);" onclick="window.open('/print/${m.slug}','_blank')">Print</button>
-        <button class="btn btn-ghost btn-sm" style="background:#f0f4f0;color:var(--green);border-color:var(--border);" onclick="openEmbedModal('${m.slug}')">Embed</button>
         <div class="overflow-wrap" style="margin-left:auto">
           <button class="btn btn-ghost btn-sm" style="background:#f0f4f0;color:var(--muted);border-color:var(--border);" onclick="toggleOverflow(this)">⋯</button>
           <div class="overflow-menu">
@@ -165,7 +168,7 @@ function renderEditor() {
     right: `
       <span class="save-status" id="save-status"></span>
       <button class="btn btn-ghost btn-sm" onclick="window.open('/print/${m.slug}','_blank')">Print</button>
-      <button class="btn btn-ghost btn-sm" onclick="openEmbedModal('${m.slug}')">Embed</button>
+      <button class="btn btn-ghost btn-sm" onclick="openCombinedEmbedModal()">Embed</button>
       <button class="btn btn-primary btn-sm" onclick="saveMenu()">Save</button>
     `
   });
@@ -206,6 +209,13 @@ function renderEditor() {
               oninput="document.getElementById('logo-scale-val').textContent=this.value+'mm'">
             <span id="logo-scale-val" style="font-size:12px;color:var(--muted);min-width:38px;text-align:right;">${m.logoScale || 62}mm</span>
           </div>
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;user-select:none;">
+            <input type="checkbox" id="ed-show-embed" ${m.showInEmbed ? 'checked' : ''}>
+            Include in website embed
+            <span style="font-size:11px;color:var(--muted);font-weight:400;">— when checked, this menu appears as a tab in the Ecwid embed code</span>
+          </label>
         </div>
       </div>
     </div>
@@ -338,6 +348,7 @@ async function saveMenu() {
   currentMenu.footer = document.getElementById('ed-footer')?.value.trim() || '';
   currentMenu.showDividers = document.getElementById('ed-dividers')?.checked ?? true;
   currentMenu.logoScale = parseInt(document.getElementById('ed-logo-scale')?.value) || 62;
+  currentMenu.showInEmbed = document.getElementById('ed-show-embed')?.checked || false;
 
   const statusEl = document.getElementById('save-status');
   if (statusEl) statusEl.textContent = 'Saving…';
@@ -464,13 +475,13 @@ async function saveSettings() {
 // ════════════════════════════════════════════════════════════════════════════
 // EMBED MODAL
 // ════════════════════════════════════════════════════════════════════════════
-async function openEmbedModal(slug) {
+async function openCombinedEmbedModal() {
   openModal(`
-    <div class="modal-header"><h2>Embed Code — ${esc(slug)}</h2><button class="btn-icon" onclick="closeModal()">×</button></div>
+    <div class="modal-header"><h2>Website Embed Code</h2><button class="btn-icon" onclick="closeModal()">×</button></div>
     <div class="modal-body">
       <p style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6;">
-        Copy the code below and paste it into the <strong>Custom HTML</strong> block on the Herd menu page in Ecwid.<br>
-        Select all existing code and replace it with this each time you update the menu.
+        Copy this code and paste it into the <strong>Custom HTML</strong> block in Ecwid.<br>
+        It includes every menu with <strong>Include in website embed</strong> ticked. Refresh this code in Ecwid whenever you change which menus are included.
       </p>
       <textarea class="code-area" id="embed-code" readonly onclick="this.select()">Loading…</textarea>
     </div>
@@ -480,7 +491,7 @@ async function openEmbedModal(slug) {
       <button class="btn" onclick="closeModal()" style="border:1px solid var(--border)">Close</button>
     </div>`, true);
 
-  const html = await fetch(`/embed/${slug}`).then(r => r.text());
+  const html = await fetch('/embed').then(r => r.text());
   const ta = document.getElementById('embed-code');
   if (ta) ta.value = html;
 }

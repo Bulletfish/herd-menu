@@ -80,7 +80,7 @@ function listMenus() {
     .filter(f => f.endsWith('.json'))
     .map(f => {
       const m = JSON.parse(fs.readFileSync(path.join(MENUS_DIR, f), 'utf8'));
-      return { id: m.id, title: m.title, slug: m.slug, status: m.status, lastUpdated: m.lastUpdated, publishedAt: m.publishedAt || null };
+      return { id: m.id, title: m.title, slug: m.slug, status: m.status, lastUpdated: m.lastUpdated, publishedAt: m.publishedAt || null, showInEmbed: m.showInEmbed || false };
     })
     .sort((a, b) => {
       const order = { active: 0, draft: 1, archived: 2 };
@@ -232,17 +232,34 @@ app.get('/print/:slug', requireAuth, (req, res) => {
   }));
 });
 
-// Embed (unauthenticated)
+// Helper: build resolved menu array for embed
+function buildEmbedMenus(req, menus) {
+  const settings = readSettings();
+  return menus.map(m => {
+    const data = mergedMenu(m, settings);
+    data.meta.logoUrl = resolveLogoUrl(req, settings);
+    return data;
+  });
+}
+
+// Combined embed — all menus marked showInEmbed, in dashboard sort order (unauthenticated)
+app.get('/embed', (req, res) => {
+  const visible = listMenus()
+    .filter(m => m.showInEmbed && m.status !== 'archived')
+    .map(m => readMenu(m.slug))
+    .filter(Boolean);
+  const resolved = buildEmbedMenus(req, visible);
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.send(renderTemplate('embed.template.html', { __MENUS_DATA__: JSON.stringify(resolved) }));
+});
+
+// Single-menu embed — kept for reference / backward compat (unauthenticated)
 app.get('/embed/:slug', (req, res) => {
   const menu = readMenu(req.params.slug);
   if (!menu) return res.status(404).send('<!-- Menu not found -->');
-  const settings = readSettings();
-  const data = mergedMenu(menu, settings);
-  data.meta.logoUrl = resolveLogoUrl(req, settings);
+  const resolved = buildEmbedMenus(req, [menu]);
   res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-  res.send(renderTemplate('embed.template.html', {
-    __MENU_DATA__: JSON.stringify(data)
-  }));
+  res.send(renderTemplate('embed.template.html', { __MENUS_DATA__: JSON.stringify(resolved) }));
 });
 
 app.listen(PORT, () => {
