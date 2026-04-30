@@ -31,41 +31,44 @@
 @keyframes hmwFade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 /* Panel tagline */
 #herd-menu-widget .hmw-tagline{
-  font-size:12px;color:#666;line-height:1.65;font-style:italic;
-  padding:14px 24px 0;text-align:center
+  font-size:14px;color:#666;line-height:1.7;font-style:italic;
+  padding:20px 28px 4px;text-align:center
 }
-/* Section */
-#herd-menu-widget .hmw-content{padding:18px 24px}
-#herd-menu-widget .hmw-section{margin-bottom:20px}
+/* Section — generous breathing room between sections */
+#herd-menu-widget .hmw-content{padding:24px 28px 28px}
+#herd-menu-widget .hmw-section{margin-bottom:32px}
+#herd-menu-widget .hmw-section:last-child{margin-bottom:0}
+/* Section label: quiet signpost — small, tracked, muted; not a headline */
 #herd-menu-widget .hmw-section-name{
-  font-family:'Courier New',Courier,monospace;font-size:14px;font-weight:700;
-  text-transform:uppercase;letter-spacing:0.08em;color:#1a1a1a;
-  padding-bottom:6px;border-bottom:1px solid #c8d8c9;margin-bottom:8px
+  font-family:'Courier New',Courier,monospace;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.18em;color:#6b7c6d;
+  margin-bottom:14px;border-bottom:none;padding-bottom:0
 }
 #herd-menu-widget .hmw-section-subtitle{
-  font-size:12px;color:#888;font-style:italic;margin:-2px 0 8px
+  font-size:13px;color:#888;font-style:italic;margin:-8px 0 12px
 }
-/* Items */
+/* Items — no borders; whitespace alone separates them */
 #herd-menu-widget .hmw-item{
   display:flex;justify-content:space-between;align-items:baseline;
-  padding:6px 0;border-bottom:1px solid #eef2ef;gap:12px
+  padding:9px 0;gap:16px
 }
-#herd-menu-widget .hmw-item:last-child{border-bottom:none}
 #herd-menu-widget .hmw-item-left{flex:1;min-width:0}
-#herd-menu-widget .hmw-item-name{font-size:13px;color:#1a1a1a;font-weight:400;line-height:1.4}
-#herd-menu-widget .hmw-item-desc{font-size:11px;color:#888;font-style:italic;margin-top:2px}
-#herd-menu-widget .hmw-item-price{font-size:13px;color:#2F5233;font-weight:500;white-space:nowrap;flex-shrink:0}
+#herd-menu-widget .hmw-item-name{font-size:15px;color:#1a1a1a;font-weight:400;line-height:1.5}
+#herd-menu-widget .hmw-item-desc{font-size:12px;color:#888;font-style:italic;margin-top:3px;line-height:1.5}
+#herd-menu-widget .hmw-item-price{font-size:15px;color:#2F5233;font-weight:500;white-space:nowrap;flex-shrink:0}
 /* Footer */
 #herd-menu-widget .hmw-footer{
-  padding:14px 24px;background:#fff;border-top:1px solid #dde5de;
-  font-size:10.5px;color:#888;text-align:center;line-height:1.6;font-style:italic
+  padding:16px 28px;background:#fff;border-top:1px solid #dde5de;
+  font-size:11px;color:#888;text-align:center;line-height:1.65;font-style:italic
 }
 @media(max-width:520px){
   #herd-menu-widget .hmw-brand-img{width:140px}
-  #herd-menu-widget .hmw-content{padding:14px 16px}
-  #herd-menu-widget .hmw-tagline{padding:12px 16px 0}
+  #herd-menu-widget .hmw-content{padding:18px 20px 24px}
+  #herd-menu-widget .hmw-tagline{padding:16px 20px 4px;font-size:13px}
   #herd-menu-widget .hmw-menu-tab{padding:10px 13px;font-size:10px}
-  #herd-menu-widget .hmw-footer{padding:12px 16px}
+  #herd-menu-widget .hmw-footer{padding:14px 20px}
+  #herd-menu-widget .hmw-item-name{font-size:14px}
+  #herd-menu-widget .hmw-item-price{font-size:14px}
 }
 </style>
 <div id="herd-menu-widget">
