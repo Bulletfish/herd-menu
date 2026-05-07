@@ -274,7 +274,14 @@ app.post('/api/embed-order', requireAuth, (req, res) => {
 });
 
 // Combined embed — all menus marked showInEmbed, sorted by embedOrder (unauthenticated)
+// CORS allowed so the live-fetch loader can call this from any domain (e.g. Ecwid)
+app.options('/embed', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET');
+  res.status(204).end();
+});
 app.get('/embed', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
   const visible = listMenus()
     .filter(m => m.showInEmbed && m.status !== 'archived')
     .sort((a, b) => (a.embedOrder || 999) - (b.embedOrder || 999))

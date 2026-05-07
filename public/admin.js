@@ -516,22 +516,37 @@ async function openCombinedEmbedModal() {
         <button class="btn btn-green btn-sm" onclick="saveEmbedOrder()">Save order</button>
         <span id="order-saved" style="display:none;font-size:12px;color:var(--green);font-weight:500;">Saved ✓</span>
       </div>
-      <p class="embed-section-label" style="margin-top:20px;">Embed code</p>
+      <p class="embed-section-label" style="margin-top:20px;">Live embed snippet <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--green);font-size:11px;">— recommended</span></p>
       <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6;">
-        Paste this into the <strong>Custom HTML</strong> block in Ecwid.
-        Re-copy whenever you add or remove menus from the embed.
+        Paste this into Ecwid <strong>once</strong>. It fetches the latest menu automatically every time a visitor loads the page — you never need to update the Ecwid code again.
       </p>
-      <textarea class="code-area" id="embed-code" readonly onclick="this.select()">Loading…</textarea>
+      <textarea class="code-area" id="embed-live" readonly onclick="this.select()" style="height:130px;">Loading…</textarea>
+      <div style="margin-top:6px;display:flex;align-items:center;gap:10px;">
+        <button class="btn btn-green btn-sm" onclick="copyLiveEmbed()">Copy live snippet</button>
+        <span class="copy-success" id="copy-live-success">Copied!</span>
+      </div>
+
+      <p class="embed-section-label" style="margin-top:20px;">Static fallback <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);font-size:11px;">— use this if the live snippet causes issues in Ecwid</span></p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6;">
+        A self-contained snapshot. Re-copy from here whenever you change which menus appear in the embed.
+      </p>
+      <textarea class="code-area" id="embed-static" readonly onclick="this.select()">Loading…</textarea>
     </div>
     <div class="modal-footer">
       <span class="copy-success" id="copy-success">Copied!</span>
-      <button class="btn btn-green" onclick="copyEmbed()">Copy to Clipboard</button>
+      <button class="btn btn-green" onclick="copyEmbed()">Copy static code</button>
       <button class="btn" onclick="closeModal()" style="border:1px solid var(--border)">Close</button>
     </div>`, true);
 
+  const embedUrl = window.location.origin + '/embed';
+  const liveSnippet = `<div id="herd-menu-embed"></div>\n<script>\nfetch('${embedUrl}')\n  .then(function(r){return r.text();})\n  .then(function(html){\n    var el=document.getElementById('herd-menu-embed');\n    el.innerHTML=html;\n    el.querySelectorAll('script').forEach(function(s){\n      var n=document.createElement('script');\n      n.textContent=s.textContent;\n      s.parentNode.replaceChild(n,s);\n    });\n  });\n<\/script>`;
+
+  const liveEl = document.getElementById('embed-live');
+  if (liveEl) liveEl.value = liveSnippet;
+
   const html = await fetch('/embed').then(r => r.text());
-  const ta = document.getElementById('embed-code');
-  if (ta) ta.value = html;
+  const staticEl = document.getElementById('embed-static');
+  if (staticEl) staticEl.value = html;
 }
 
 function renderEmbedOrderList(orderedMenus) {
@@ -574,10 +589,18 @@ async function saveEmbedOrder() {
 }
 
 async function copyEmbed() {
-  const ta = document.getElementById('embed-code');
+  const ta = document.getElementById('embed-static');
   try { await navigator.clipboard.writeText(ta.value); }
   catch { ta.select(); document.execCommand('copy'); }
   const el = document.getElementById('copy-success');
+  if (el) { el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 3000); }
+}
+
+async function copyLiveEmbed() {
+  const ta = document.getElementById('embed-live');
+  try { await navigator.clipboard.writeText(ta.value); }
+  catch { ta.select(); document.execCommand('copy'); }
+  const el = document.getElementById('copy-live-success');
   if (el) { el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 3000); }
 }
 
