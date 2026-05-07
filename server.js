@@ -80,7 +80,7 @@ function listMenus() {
     .filter(f => f.endsWith('.json'))
     .map(f => {
       const m = JSON.parse(fs.readFileSync(path.join(MENUS_DIR, f), 'utf8'));
-      return { id: m.id, title: m.title, slug: m.slug, status: m.status, lastUpdated: m.lastUpdated, publishedAt: m.publishedAt || null, showInEmbed: m.showInEmbed || false };
+      return { id: m.id, title: m.title, slug: m.slug, status: m.status, lastUpdated: m.lastUpdated, publishedAt: m.publishedAt || null, showInEmbed: m.showInEmbed || false, embedOrder: m.embedOrder || 999 };
     })
     .sort((a, b) => {
       const order = { active: 0, draft: 1, archived: 2 };
@@ -262,10 +262,22 @@ function buildEmbedMenus(req, menus) {
   });
 }
 
-// Combined embed — all menus marked showInEmbed, in dashboard sort order (unauthenticated)
+// Embed tab order — save ordered slug array, updates embedOrder on each menu
+app.post('/api/embed-order', requireAuth, (req, res) => {
+  const { slugs } = req.body;
+  if (!Array.isArray(slugs)) return res.status(400).json({ error: 'slugs array required' });
+  slugs.forEach((slug, i) => {
+    const menu = readMenu(slug);
+    if (menu) writeMenu(slug, { ...menu, embedOrder: i + 1, lastUpdated: today() });
+  });
+  res.json({ ok: true });
+});
+
+// Combined embed — all menus marked showInEmbed, sorted by embedOrder (unauthenticated)
 app.get('/embed', (req, res) => {
   const visible = listMenus()
     .filter(m => m.showInEmbed && m.status !== 'archived')
+    .sort((a, b) => (a.embedOrder || 999) - (b.embedOrder || 999))
     .map(m => readMenu(m.slug))
     .filter(Boolean);
   const resolved = buildEmbedMenus(req, visible);

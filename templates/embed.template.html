@@ -40,7 +40,7 @@
 #herd-menu-widget .hmw-section:last-child{margin-bottom:0}
 /* Section label: quiet signpost — small, tracked, muted; not a headline */
 #herd-menu-widget .hmw-section-name{
-  font-family:'Courier New',Courier,monospace;font-size:11px;font-weight:700;
+  font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:700;
   text-transform:uppercase;letter-spacing:0.18em;color:#6b7c6d;
   margin-bottom:14px;border-bottom:none;padding-bottom:0
 }
@@ -77,7 +77,7 @@
 <script>(function(){
 var MENUS=__MENUS_DATA__;
 if(!MENUS||!MENUS.length)return;
-function fmt(p){if(p===''||p===null||p===undefined)return'';var n=parseFloat(p);if(isNaN(n))return String(p);if(!n)return'';return'£'+(n%1===0?n:n.toFixed(2));}
+function fmt(p){if(p===''||p===null||p===undefined)return'';var n=parseFloat(p);if(isNaN(n))return String(p);if(!n)return'';return(n%1===0?String(n):n.toFixed(2));}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 /* Apply body font from global settings (same across all menus) */
 var bodyFont=MENUS[0].meta&&MENUS[0].meta.bodyFont;

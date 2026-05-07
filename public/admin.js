@@ -494,13 +494,27 @@ async function saveSettings() {
 // ════════════════════════════════════════════════════════════════════════════
 // EMBED MODAL
 // ════════════════════════════════════════════════════════════════════════════
+let embedOrderSlugs = [];
+
 async function openCombinedEmbedModal() {
+  const visible = menus
+    .filter(m => m.showInEmbed && m.status !== 'archived')
+    .sort((a, b) => (a.embedOrder || 999) - (b.embedOrder || 999));
+  embedOrderSlugs = visible.map(m => m.slug);
+
   openModal(`
-    <div class="modal-header"><h2>Website Embed Code</h2><button class="btn-icon" onclick="closeModal()">×</button></div>
+    <div class="modal-header"><h2>Website Embed</h2><button class="btn-icon" onclick="closeModal()">×</button></div>
     <div class="modal-body">
-      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6;">
-        Copy this code and paste it into the <strong>Custom HTML</strong> block in Ecwid.<br>
-        It includes every menu with <strong>Include in website embed</strong> ticked. Refresh this code in Ecwid whenever you change which menus are included.
+      <p class="embed-section-label">Tab order</p>
+      <div id="embed-order-list">${renderEmbedOrderList(visible)}</div>
+      <div style="margin-top:8px;display:flex;align-items:center;gap:10px;">
+        <button class="btn btn-green btn-sm" onclick="saveEmbedOrder()">Save order</button>
+        <span id="order-saved" style="display:none;font-size:12px;color:var(--green);font-weight:500;">Saved ✓</span>
+      </div>
+      <p class="embed-section-label" style="margin-top:20px;">Embed code</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6;">
+        Paste this into the <strong>Custom HTML</strong> block in Ecwid.
+        Re-copy whenever you add or remove menus from the embed.
       </p>
       <textarea class="code-area" id="embed-code" readonly onclick="this.select()">Loading…</textarea>
     </div>
@@ -513,6 +527,45 @@ async function openCombinedEmbedModal() {
   const html = await fetch('/embed').then(r => r.text());
   const ta = document.getElementById('embed-code');
   if (ta) ta.value = html;
+}
+
+function renderEmbedOrderList(orderedMenus) {
+  if (!orderedMenus.length) return '<p style="font-size:13px;color:var(--muted);padding:4px 0;">No menus are marked "Include in website embed". Edit a menu to enable this.</p>';
+  return orderedMenus.map((m, i) => `
+    <div class="embed-order-row">
+      <span class="embed-order-title">${esc(m.title)}</span>
+      <div class="embed-order-btns">
+        <button class="btn-icon" ${i === 0 ? 'disabled' : ''} onclick="moveEmbedMenu('${m.slug}',-1)" title="Move up">↑</button>
+        <button class="btn-icon" ${i === orderedMenus.length - 1 ? 'disabled' : ''} onclick="moveEmbedMenu('${m.slug}',1)" title="Move down">↓</button>
+      </div>
+    </div>`).join('');
+}
+
+function moveEmbedMenu(slug, dir) {
+  const idx = embedOrderSlugs.indexOf(slug);
+  if (idx < 0) return;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= embedOrderSlugs.length) return;
+  [embedOrderSlugs[idx], embedOrderSlugs[newIdx]] = [embedOrderSlugs[newIdx], embedOrderSlugs[idx]];
+  const orderedMenus = embedOrderSlugs.map(s => menus.find(m => m.slug === s)).filter(Boolean);
+  const list = document.getElementById('embed-order-list');
+  if (list) list.innerHTML = renderEmbedOrderList(orderedMenus);
+}
+
+async function saveEmbedOrder() {
+  await fetch('/api/embed-order', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ slugs: embedOrderSlugs })
+  });
+  embedOrderSlugs.forEach((slug, i) => {
+    const m = menus.find(m => m.slug === slug);
+    if (m) m.embedOrder = i + 1;
+  });
+  const html = await fetch('/embed').then(r => r.text());
+  const ta = document.getElementById('embed-code');
+  if (ta) ta.value = html;
+  const saved = document.getElementById('order-saved');
+  if (saved) { saved.style.display = 'inline'; setTimeout(() => saved.style.display = 'none', 2500); }
 }
 
 async function copyEmbed() {
