@@ -121,7 +121,6 @@ h+='</div>';
 /* One panel per menu — all sections visible at once, no sub-navigation */
 MENUS.forEach(function(m,i){
   h+='<div class="hmw-menu-panel'+(i===0?' active':'')+'" id="hmw-mp-'+i+'">';
-  if(m.meta&&m.meta.tagline)h+='<p class="hmw-tagline">'+esc(m.meta.tagline)+'</p>';
   if(m.embedNote)h+='<div class="hmw-embed-note">'+esc(m.embedNote)+'</div>';
   h+='<div class="hmw-content">';
   (m.sections||[]).forEach(function(s){h+=renderSection(s);});
