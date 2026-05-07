@@ -216,6 +216,10 @@ function renderEditor() {
             Include in website embed
             <span style="font-size:11px;color:var(--muted);font-weight:400;">— when checked, this menu appears as a tab in the Ecwid embed code</span>
           </label>
+          <div class="field" style="margin:10px 0 0;">
+            <label>Online info <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(embed only — not printed)</span></label>
+            <textarea id="ed-embed-note" rows="2" placeholder="e.g. Available Monday–Friday, 12pm–3pm">${esc(m.embedNote||'')}</textarea>
+          </div>
         </div>
       </div>
     </div>
@@ -365,6 +369,7 @@ async function saveMenu() {
   currentMenu.status = document.getElementById('ed-status')?.value || currentMenu.status;
   currentMenu.tagline = document.getElementById('ed-tagline')?.value.trim() || '';
   currentMenu.footer = document.getElementById('ed-footer')?.value.trim() || '';
+  currentMenu.embedNote = document.getElementById('ed-embed-note')?.value.trim() || '';
   currentMenu.showDividers = document.getElementById('ed-dividers')?.checked ?? true;
   currentMenu.logoScale = parseInt(document.getElementById('ed-logo-scale')?.value) || 62;
   currentMenu.showInEmbed = document.getElementById('ed-show-embed')?.checked || false;
