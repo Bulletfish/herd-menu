@@ -114,6 +114,16 @@
     margin-top: 0.5mm; margin-bottom: 1.5mm;
   }
 
+  /* ── Allergen badges ─────────────────────────────────── */
+  .item-allergens {
+    display: inline-flex; gap: 3px; margin-left: 5px; vertical-align: middle;
+  }
+  .item-allergen {
+    font-family: var(--font-heading); font-size: 6.5pt; font-weight: 700;
+    letter-spacing: 0.05em; color: #fff; background: var(--green);
+    padding: 1px 4px; border-radius: 3px; line-height: 1.4;
+  }
+
   /* ── Footer — always at bottom of page ──────────────── */
   .footer-area { margin-top: 6mm; }
 
@@ -162,7 +172,9 @@
 var MENU = __MENU_DATA__;
 
 function fmt(p) {
+  if (p === '' || p === null || p === undefined) return '';
   var n = parseFloat(p);
+  if (isNaN(n)) return String(p); /* e.g. "MP" */
   if (!n) return '';
   return n % 1 === 0 ? String(n) : n.toFixed(2).replace(/\.?0+$/, '');
 }
@@ -201,10 +213,19 @@ function renderSection(section, showDividers) {
   if (section.subtitle) {
     html += '<div class="section-subtitle">' + esc(section.subtitle) + '</div>';
   }
+  var allergenLabels = { v: 'V', ve: 'VE', g: 'G' };
   section.items.forEach(function(item) {
     html += '<div class="item">';
-    html += '<span class="item-name">' + esc(item.name) + '</span>';
-    if (item.price) html += '<span class="item-price">' + fmt(item.price) + '</span>';
+    html += '<span class="item-name">' + esc(item.name);
+    var tags = (item.allergens || []).filter(function(a) { return allergenLabels[a]; });
+    if (tags.length) {
+      html += '<span class="item-allergens">';
+      tags.forEach(function(a) { html += '<span class="item-allergen">' + allergenLabels[a] + '</span>'; });
+      html += '</span>';
+    }
+    html += '</span>';
+    var priceStr = fmt(item.price);
+    if (priceStr) html += '<span class="item-price">' + priceStr + '</span>';
     html += '</div>';
     if (item.description) {
       html += '<div class="item-note">' + esc(item.description) + '</div>';

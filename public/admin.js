@@ -303,16 +303,26 @@ function buildItemRow(item, si, ii) {
     }
   });
 
+  const allergens = item.allergens || [];
+  const allergenDefs = [
+    { code: 'v',  label: 'V',  title: 'Vegetarian' },
+    { code: 've', label: 'VE', title: 'Vegan' },
+    { code: 'g',  label: 'G',  title: 'Contains gluten' }
+  ];
+  const allergenBtns = allergenDefs.map(a =>
+    `<button class="allergen-tag${allergens.includes(a.code) ? ' active' : ''}" title="${a.title}"
+      onclick="toggleAllergen(${si},${ii},'${a.code}')">${a.label}</button>`
+  ).join('');
+
   row.innerHTML = `
     <input class="item-input" value="${esc(item.name)}" placeholder="Item name"
       onchange="currentMenu.sections[${si}].items[${ii}].name=this.value.trim();">
-    <div class="price-wrap">
-      <input class="item-input" type="number" step="0.01" min="0" value="${item.price||''}" placeholder="0.00"
-        onchange="currentMenu.sections[${si}].items[${ii}].price=parseFloat(this.value)||0;">
-    </div>
+    <input class="item-input price-input" type="text" value="${esc(String(item.price||''))}" placeholder="£ or MP"
+      onchange="currentMenu.sections[${si}].items[${ii}].price=this.value.trim();">
     <input class="item-input desc" value="${esc(item.description||'')}" placeholder="Optional note or add-on…"
       onchange="currentMenu.sections[${si}].items[${ii}].description=this.value.trim();">
-    <button class="btn-icon" onclick="deleteItem(${si},${ii})">✕</button>`;
+    <button class="btn-icon" onclick="deleteItem(${si},${ii})">✕</button>
+    <div class="item-allergens-row">${allergenBtns}</div>`;
   return row;
 }
 
@@ -329,8 +339,17 @@ function deleteSection(si) {
   renderSections();
 }
 
+function toggleAllergen(si, ii, code) {
+  const item = currentMenu.sections[si].items[ii];
+  if (!item.allergens) item.allergens = [];
+  const idx = item.allergens.indexOf(code);
+  if (idx >= 0) item.allergens.splice(idx, 1);
+  else item.allergens.push(code);
+  renderSections();
+}
+
 function addItem(si) {
-  currentMenu.sections[si].items.push({ name: '', price: 0, description: '' });
+  currentMenu.sections[si].items.push({ name: '', price: '', description: '', allergens: [] });
   renderSections();
   const rows = document.querySelectorAll(`#items-${si} .item-row`);
   rows[rows.length - 1]?.querySelector('.item-input')?.focus();
