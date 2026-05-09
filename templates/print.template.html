@@ -146,13 +146,14 @@
       margin: 0; padding: 16mm 18mm 14mm;
       box-shadow: none; overflow: hidden;
     }
-    .section-row { page-break-inside: avoid; }
+    /* Force columns to stay side-by-side in print regardless of page width */
+    .section-row { display: flex; flex-direction: row; page-break-inside: avoid; }
     .section { page-break-inside: avoid; }
   }
 
-  @media (max-width: 240mm) {
+  /* Narrow screen only — explicitly scoped to screen so it never fires during print */
+  @media screen and (max-width: 240mm) {
     .page { width: 100%; margin: 0; box-shadow: none; }
-    /* Stack multi-column sections on very narrow screens */
     .section-row { flex-direction: column; }
   }
 </style>
