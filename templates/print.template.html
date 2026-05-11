@@ -145,6 +145,18 @@
     color: var(--muted); text-align: center; line-height: 1.6; font-style: italic;
   }
 
+  /* ── Multi-price columns ─────────────────────────────── */
+  .price-header-row { display: flex; justify-content: flex-end; padding-bottom: 1mm; }
+  .price-header-cell { width: 48px; text-align: right; font-size: 7.5pt; font-style: italic; color: var(--muted); }
+  .price-header-cell.wide { width: 42px; }
+  .item-price-group { display: flex; flex-shrink: 0; }
+  .item-price-cell { width: 48px; text-align: right; font-size: 10pt; color: var(--text); white-space: nowrap; flex-shrink: 0; }
+  .item-price-cell.wide { width: 42px; }
+
+  /* ── Two-column page layout ──────────────────────────── */
+  .page-content.two-col { column-count: 2; column-gap: 8mm; }
+  .page-content.two-col .section { break-inside: avoid; }
+
   /* ── Print media ─────────────────────────────────────── */
   @media print {
     @page { size: A4 portrait; margin: 0; }
@@ -232,6 +244,19 @@ function renderSection(section, showDividers) {
     html += '<div class="section-subtitle">' + esc(section.subtitle) + '</div>';
   }
   var allergenLabels = { v: 'v', ve: 've', g: 'g' };
+  var priceColumns = section.priceColumns || [];
+  var multiPrice = priceColumns.length >= 2;
+  var cellClass = priceColumns.length >= 3 ? 'item-price-cell wide' : 'item-price-cell';
+  var headerCellClass = priceColumns.length >= 3 ? 'price-header-cell wide' : 'price-header-cell';
+
+  if (multiPrice) {
+    html += '<div class="price-header-row">';
+    priceColumns.forEach(function(col) {
+      html += '<span class="' + headerCellClass + '">' + esc(col) + '</span>';
+    });
+    html += '</div>';
+  }
+
   section.items.forEach(function(item) {
     html += '<div class="item">';
     html += '<span class="item-name">' + esc(item.name);
@@ -242,8 +267,18 @@ function renderSection(section, showDividers) {
       html += '</span>';
     }
     html += '</span>';
-    var priceStr = fmt(item.price);
-    if (priceStr) html += '<span class="item-price">' + priceStr + '</span>';
+    if (multiPrice) {
+      var prices = item.prices || [];
+      html += '<div class="item-price-group">';
+      priceColumns.forEach(function(col, pi) {
+        var pStr = fmt(prices[pi]);
+        html += '<span class="' + cellClass + '">' + (pStr || '') + '</span>';
+      });
+      html += '</div>';
+    } else {
+      var priceStr = fmt(item.price);
+      if (priceStr) html += '<span class="item-price">' + priceStr + '</span>';
+    }
     html += '</div>';
     if (item.description) {
       html += '<div class="item-note">' + esc(item.description) + '</div>';
@@ -274,7 +309,8 @@ function render(menu) {
   }
 
   /* ── Content area ── */
-  html += '<div class="page-content">';
+  var twoCol = menu.pageColumns === 2;
+  html += '<div class="page-content' + (twoCol ? ' two-col' : '') + '">';
 
   // Header
   html += '<div class="header">';
@@ -289,17 +325,21 @@ function render(menu) {
   if (menu.printTitle) html += '<p class="menu-title">' + esc(menu.printTitle) + '</p>';
   if (menu.printIntro) html += '<p class="menu-intro">' + esc(menu.printIntro) + '</p>';
 
-  // Sections — grouped into rows by layout
-  var rows = groupSections(menu.sections || []);
-  rows.forEach(function(row) {
-    if (row.layout === 'full') {
-      html += renderSection(row.sections[0], showDividers);
-    } else {
-      html += '<div class="section-row">';
-      row.sections.forEach(function(s) { html += renderSection(s, showDividers); });
-      html += '</div>';
-    }
-  });
+  // Sections — in two-col mode render individually; otherwise group by layout
+  if (twoCol) {
+    (menu.sections || []).forEach(function(s) { html += renderSection(s, showDividers); });
+  } else {
+    var rows = groupSections(menu.sections || []);
+    rows.forEach(function(row) {
+      if (row.layout === 'full') {
+        html += renderSection(row.sections[0], showDividers);
+      } else {
+        html += '<div class="section-row">';
+        row.sections.forEach(function(s) { html += renderSection(s, showDividers); });
+        html += '</div>';
+      }
+    });
+  }
 
   html += '</div>'; // end .page-content
 

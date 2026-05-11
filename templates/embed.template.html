@@ -64,6 +64,11 @@
 #herd-menu-widget .hmw-allergens{display:inline;margin-left:4px}
 #herd-menu-widget .hmw-allergen{font-size:11px;font-style:italic;color:#888;font-weight:400}
 #herd-menu-widget .hmw-item-price{font-size:15px;color:#2F5233;font-weight:500;white-space:nowrap;flex-shrink:0}
+/* Multi-price columns */
+#herd-menu-widget .hmw-price-headers{display:flex;justify-content:flex-end;gap:12px;margin-bottom:4px}
+#herd-menu-widget .hmw-price-header{font-size:10px;color:#888;font-style:italic;text-align:right;min-width:44px}
+#herd-menu-widget .hmw-item-prices{display:flex;gap:12px;flex-shrink:0}
+#herd-menu-widget .hmw-item-price-cell{font-size:15px;color:#2F5233;font-weight:500;white-space:nowrap;min-width:44px;text-align:right}
 /* Footer */
 #herd-menu-widget .hmw-footer{
   padding:16px 28px;background:#fff;border-top:1px solid #dde5de;
@@ -93,6 +98,13 @@ function renderSection(s){
   var h='<div class="hmw-section">';
   h+='<div class="hmw-section-name">'+esc(s.name)+'</div>';
   if(s.subtitle)h+='<div class="hmw-section-subtitle">'+esc(s.subtitle)+'</div>';
+  var priceColumns=s.priceColumns||[];
+  var multiPrice=priceColumns.length>=2;
+  if(multiPrice){
+    h+='<div class="hmw-price-headers">';
+    priceColumns.forEach(function(col){h+='<span class="hmw-price-header">'+esc(col)+'</span>';});
+    h+='</div>';
+  }
   (s.items||[]).forEach(function(it){
     h+='<div class="hmw-item"><div class="hmw-item-left">';
     var tags=(it.allergens||[]).filter(function(a){return allergenLabels[a];});
@@ -100,7 +112,16 @@ function renderSection(s){
     if(tags.length){tagHtml='<span class="hmw-allergens"><span class="hmw-allergen">('+tags.map(function(a){return allergenLabels[a];}).join(', ')+')</span></span>';}
     h+='<div class="hmw-item-name">'+esc(it.name)+tagHtml+'</div>';
     if(it.description)h+='<div class="hmw-item-desc">'+esc(it.description)+'</div>';
-    h+='</div><div class="hmw-item-price">'+fmt(it.price)+'</div></div>';
+    h+='</div>';
+    if(multiPrice){
+      var prices=it.prices||[];
+      h+='<div class="hmw-item-prices">';
+      priceColumns.forEach(function(col,pi){h+='<span class="hmw-item-price-cell">'+fmt(prices[pi])+'</span>';});
+      h+='</div>';
+    } else {
+      h+='<div class="hmw-item-price">'+fmt(it.price)+'</div>';
+    }
+    h+='</div>';
   });
   h+='</div>';
   return h;

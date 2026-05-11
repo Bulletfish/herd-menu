@@ -216,6 +216,10 @@ function renderEditor() {
               <option value="a5" ${m.pageSize==='a5'?'selected':''}>A5</option>
             </select>
           </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;user-select:none;">
+            <input type="checkbox" id="ed-two-col" ${m.pageColumns===2?'checked':''}>
+            Two-column layout
+          </label>
         </div>
         <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
           <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;user-select:none;">
@@ -274,6 +278,14 @@ function buildSectionCard(section, si) {
 
   const layout = section.layout || 'full';
   const subtitle = section.subtitle || '';
+  const priceColumns = section.priceColumns || [];
+  const multiPrice = priceColumns.length >= 2;
+  const priceCols = priceColumns.length >= 3 ? '65px 65px 65px' : priceColumns.length === 2 ? '70px 70px' : '80px';
+  const gridTpl = `1fr ${priceCols} 1fr 32px`;
+  const headerInner = multiPrice
+    ? `<span>Item</span>${priceColumns.map(c => `<span style="text-align:right">${esc(c)}</span>`).join('')}<span class="col-desc">Note / Add-on</span><span></span>`
+    : `<span>Item</span><span>Price</span><span class="col-desc">Note / Add-on</span><span></span>`;
+
   card.innerHTML = `
     <div class="card-header">
       <span class="drag-handle" title="Drag to reorder">⠿</span>
@@ -290,24 +302,31 @@ function buildSectionCard(section, si) {
           <option value="third" ${layout==='third'?'selected':''}>One third</option>
         </select>
       </div>
+      <div class="section-meta-field">
+        <label>Price columns <span style="font-weight:400;opacity:.6;">(e.g. Half, Pint)</span></label>
+        <input type="text" value="${esc(priceColumns.join(', '))}" placeholder="e.g. Half, Pint"
+          onchange="updatePriceColumns(${si}, this.value)">
+      </div>
       <div class="section-meta-field section-meta-subtitle">
         <label>Subtitle <span style="font-weight:400;opacity:.6;">(optional italic line, e.g. "Teapigs Herbal Teas")</span></label>
         <input type="text" value="${esc(subtitle)}" placeholder="Leave blank if not needed"
           onchange="currentMenu.sections[${si}].subtitle=this.value.trim();">
       </div>
     </div>
-    <div class="items-header">
-      <span>Item</span><span>Price</span><span class="col-desc">Note / Add-on</span><span></span>
+    <div class="items-header" style="grid-template-columns:${gridTpl}">
+      ${headerInner}
     </div>
     <div class="items-list" id="items-${si}"></div>
     <div class="add-item-row"><button class="btn-add-item" onclick="addItem(${si})">+ Add item</button></div>`;
 
   const list = card.querySelector(`#items-${si}`);
-  section.items.forEach((item, ii) => list.appendChild(buildItemRow(item, si, ii)));
+  section.items.forEach((item, ii) => list.appendChild(buildItemRow(item, si, ii, priceColumns)));
   return card;
 }
 
-function buildItemRow(item, si, ii) {
+function buildItemRow(item, si, ii, priceColumns) {
+  priceColumns = priceColumns || [];
+  const multiPrice = priceColumns.length >= 2;
   const row = document.createElement('div');
   row.className = 'item-row';
   row.draggable = true;
@@ -335,11 +354,25 @@ function buildItemRow(item, si, ii) {
       onclick="toggleAllergen(${si},${ii},'${a.code}')">${a.label}</button>`
   ).join('');
 
+  const priceCols = priceColumns.length >= 3 ? '65px 65px 65px' : priceColumns.length === 2 ? '70px 70px' : '80px';
+  row.style.gridTemplateColumns = `1fr ${priceCols} 1fr 32px`;
+
+  let priceInputsHtml;
+  if (multiPrice) {
+    const prices = item.prices || [];
+    priceInputsHtml = priceColumns.map((col, pi) =>
+      `<input class="item-input price-input" type="text" value="${esc(String(prices[pi]||''))}" placeholder="—"
+        onchange="setPriceAt(${si},${ii},${pi},this.value.trim());">`
+    ).join('');
+  } else {
+    priceInputsHtml = `<input class="item-input price-input" type="text" value="${esc(String(item.price||''))}" placeholder="£ or MP"
+      onchange="currentMenu.sections[${si}].items[${ii}].price=this.value.trim();">`;
+  }
+
   row.innerHTML = `
     <input class="item-input" value="${esc(item.name)}" placeholder="Item name"
       onchange="currentMenu.sections[${si}].items[${ii}].name=this.value.trim();">
-    <input class="item-input price-input" type="text" value="${esc(String(item.price||''))}" placeholder="£ or MP"
-      onchange="currentMenu.sections[${si}].items[${ii}].price=this.value.trim();">
+    ${priceInputsHtml}
     <input class="item-input desc" value="${esc(item.description||'')}" placeholder="Optional note or add-on…"
       onchange="currentMenu.sections[${si}].items[${ii}].description=this.value.trim();">
     <button class="btn-icon" onclick="deleteItem(${si},${ii})">✕</button>
@@ -370,7 +403,11 @@ function toggleAllergen(si, ii, code) {
 }
 
 function addItem(si) {
-  currentMenu.sections[si].items.push({ name: '', price: '', description: '', allergens: [] });
+  const section = currentMenu.sections[si];
+  const priceColumns = section.priceColumns || [];
+  const newItem = { name: '', price: '', description: '', allergens: [] };
+  if (priceColumns.length >= 2) newItem.prices = priceColumns.map(() => '');
+  section.items.push(newItem);
   renderSections();
   const rows = document.querySelectorAll(`#items-${si} .item-row`);
   rows[rows.length - 1]?.querySelector('.item-input')?.focus();
@@ -378,6 +415,24 @@ function addItem(si) {
 
 function deleteItem(si, ii) {
   currentMenu.sections[si].items.splice(ii, 1);
+  renderSections();
+}
+
+function setPriceAt(si, ii, pi, val) {
+  const item = currentMenu.sections[si].items[ii];
+  if (!item.prices) item.prices = [];
+  item.prices[pi] = val;
+}
+
+function updatePriceColumns(si, rawValue) {
+  const cols = rawValue.split(',').map(s => s.trim()).filter(Boolean);
+  currentMenu.sections[si].priceColumns = cols.length >= 2 ? cols : [];
+  if (cols.length >= 2) {
+    currentMenu.sections[si].items.forEach(item => {
+      if (!item.prices) item.prices = [];
+      while (item.prices.length < cols.length) item.prices.push('');
+    });
+  }
   renderSections();
 }
 
@@ -393,6 +448,7 @@ async function saveMenu() {
   currentMenu.showInEmbed = document.getElementById('ed-show-embed')?.checked || false;
   currentMenu.printTitle = document.getElementById('ed-print-title')?.value.trim() || '';
   currentMenu.printIntro = document.getElementById('ed-print-intro')?.value.trim() || '';
+  currentMenu.pageColumns = document.getElementById('ed-two-col')?.checked ? 2 : 1;
 
   const statusEl = document.getElementById('save-status');
   if (statusEl) statusEl.textContent = 'Saving…';
