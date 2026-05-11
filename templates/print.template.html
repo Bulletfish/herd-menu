@@ -114,14 +114,23 @@
     margin-top: 0.5mm; margin-bottom: 1.5mm;
   }
 
-  /* ── Allergen badges ─────────────────────────────────── */
-  .item-allergens {
-    display: inline-flex; gap: 3px; margin-left: 5px; vertical-align: middle;
-  }
+  /* ── Allergen indicators — simple italic, no background ─ */
+  .item-allergens { display: inline; margin-left: 4px; }
   .item-allergen {
-    font-family: var(--font-heading); font-size: 6.5pt; font-weight: 700;
-    letter-spacing: 0.05em; color: #fff; background: var(--green);
-    padding: 1px 4px; border-radius: 3px; line-height: 1.4;
+    font-family: var(--font-body); font-size: 7.5pt; font-style: italic;
+    color: var(--muted); font-weight: 400;
+  }
+
+  /* ── Print title block (set menu heading etc.) ───────── */
+  .menu-title {
+    font-family: var(--font-heading); font-size: 15pt; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text); text-align: center; margin-bottom: 3mm;
+  }
+  .menu-intro {
+    font-family: var(--font-body); font-size: 10pt; font-weight: 400;
+    color: var(--muted); text-align: center; white-space: pre-line;
+    line-height: 1.7; margin-bottom: 5mm;
   }
 
   /* ── Footer — always at bottom of page ──────────────── */
@@ -149,6 +158,12 @@
     /* Force columns to stay side-by-side in print regardless of page width */
     .section-row { display: flex; flex-direction: row; page-break-inside: avoid; }
     .section { page-break-inside: avoid; }
+  }
+
+  /* ── A5 page variant ─────────────────────────────────── */
+  .page.a5 { width: 148mm; min-height: 210mm; padding: 12mm 14mm 10mm; }
+  @media print {
+    .page.a5 { width: 148mm; height: 210mm; padding: 10mm 12mm 10mm; }
   }
 
   /* Narrow screen only — explicitly scoped to screen so it never fires during print */
@@ -189,6 +204,7 @@ function esc(str) {
 /* Group consecutive sections by layout so they can share a flex row.
    Returns an array of rows, each with { layout, sections[] }          */
 function groupSections(sections) {
+  var maxPerRow = { half: 2, third: 3 };
   var rows = [], i = 0;
   while (i < sections.length) {
     var layout = sections[i].layout || 'full';
@@ -196,8 +212,9 @@ function groupSections(sections) {
       rows.push({ layout: 'full', sections: [sections[i]] });
       i++;
     } else {
+      var max = maxPerRow[layout] || 1;
       var group = [];
-      while (i < sections.length && (sections[i].layout || 'full') === layout) {
+      while (i < sections.length && (sections[i].layout || 'full') === layout && group.length < max) {
         group.push(sections[i]);
         i++;
       }
@@ -214,14 +231,14 @@ function renderSection(section, showDividers) {
   if (section.subtitle) {
     html += '<div class="section-subtitle">' + esc(section.subtitle) + '</div>';
   }
-  var allergenLabels = { v: 'V', ve: 'VE', g: 'G' };
+  var allergenLabels = { v: 'v', ve: 've', g: 'g' };
   section.items.forEach(function(item) {
     html += '<div class="item">';
     html += '<span class="item-name">' + esc(item.name);
     var tags = (item.allergens || []).filter(function(a) { return allergenLabels[a]; });
     if (tags.length) {
       html += '<span class="item-allergens">';
-      tags.forEach(function(a) { html += '<span class="item-allergen">' + allergenLabels[a] + '</span>'; });
+      html += '<span class="item-allergen">(' + tags.map(function(a){return allergenLabels[a];}).join(', ') + ')</span>';
       html += '</span>';
     }
     html += '</span>';
@@ -241,6 +258,15 @@ function render(menu) {
   var html = '';
   var showDividers = menu.showDividers !== false;
   var logoWidthMm = (menu.logoScale || 62) + 'mm';
+  var pageSize = menu.pageSize || 'a4';
+
+  // Apply page size
+  if (pageSize === 'a5') page.classList.add('a5');
+
+  // Inject correct @page size for PDF output
+  var pageStyle = document.createElement('style');
+  pageStyle.textContent = '@page { size: ' + pageSize.toUpperCase() + ' portrait; margin: 0; }';
+  document.head.appendChild(pageStyle);
 
   // Apply body font from settings
   if (menu.meta && menu.meta.bodyFont) {
@@ -258,6 +284,10 @@ function render(menu) {
     html += '<p class="tagline">' + esc(menu.meta.tagline) + '</p>';
   }
   html += '</div>';
+
+  // Print title block (set menu heading, pricing lines, etc.)
+  if (menu.printTitle) html += '<p class="menu-title">' + esc(menu.printTitle) + '</p>';
+  if (menu.printIntro) html += '<p class="menu-intro">' + esc(menu.printIntro) + '</p>';
 
   // Sections — grouped into rows by layout
   var rows = groupSections(menu.sections || []);

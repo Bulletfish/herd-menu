@@ -209,6 +209,13 @@ function renderEditor() {
               oninput="document.getElementById('logo-scale-val').textContent=this.value+'mm'">
             <span id="logo-scale-val" style="font-size:12px;color:var(--muted);min-width:38px;text-align:right;">${m.logoScale || 62}mm</span>
           </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);white-space:nowrap;">Page size</span>
+            <select id="ed-page-size" style="font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;">
+              <option value="a4" ${(!m.pageSize||m.pageSize==='a4')?'selected':''}>A4</option>
+              <option value="a5" ${m.pageSize==='a5'?'selected':''}>A5</option>
+            </select>
+          </div>
         </div>
         <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
           <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;user-select:none;">
@@ -219,6 +226,16 @@ function renderEditor() {
           <div class="field" style="margin:10px 0 0;">
             <label>Online info <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(embed only — not printed)</span></label>
             <textarea id="ed-embed-note" rows="2" placeholder="e.g. Available Monday–Friday, 12pm–3pm">${esc(m.embedNote||'')}</textarea>
+          </div>
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+          <div class="field" style="margin:0 0 8px;">
+            <label>Print title <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(print only — large centred heading above sections)</span></label>
+            <input type="text" id="ed-print-title" value="${esc(m.printTitle||'')}" placeholder="e.g. Set Menu">
+          </div>
+          <div class="field" style="margin:0;">
+            <label>Print intro lines <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);">(print only — centred, line breaks respected)</span></label>
+            <textarea id="ed-print-intro" rows="3" placeholder="e.g. 2 courses £25&#10;3 courses £35">${esc(m.printIntro||'')}</textarea>
           </div>
         </div>
       </div>
@@ -372,7 +389,10 @@ async function saveMenu() {
   currentMenu.embedNote = document.getElementById('ed-embed-note')?.value.trim() || '';
   currentMenu.showDividers = document.getElementById('ed-dividers')?.checked ?? true;
   currentMenu.logoScale = parseInt(document.getElementById('ed-logo-scale')?.value) || 62;
+  currentMenu.pageSize = document.getElementById('ed-page-size')?.value || 'a4';
   currentMenu.showInEmbed = document.getElementById('ed-show-embed')?.checked || false;
+  currentMenu.printTitle = document.getElementById('ed-print-title')?.value.trim() || '';
+  currentMenu.printIntro = document.getElementById('ed-print-intro')?.value.trim() || '';
 
   const statusEl = document.getElementById('save-status');
   if (statusEl) statusEl.textContent = 'Saving…';
