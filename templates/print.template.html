@@ -156,6 +156,10 @@
   /* ── Two-column page layout ──────────────────────────── */
   .page-content.two-col { column-count: 2; column-gap: 8mm; }
   .page-content.two-col .section { break-inside: avoid; }
+  /* Header, print title and intro span both columns as a full-width masthead */
+  .page-content.two-col .header,
+  .page-content.two-col .menu-title,
+  .page-content.two-col .menu-intro { column-span: all; }
 
   /* ── Print media ─────────────────────────────────────── */
   @media print {
@@ -316,8 +320,9 @@ function render(menu) {
   html += '<div class="header">';
   var logoUrl = menu.meta && menu.meta.logoUrl ? menu.meta.logoUrl : '/assets/herd-brand.png';
   html += '<img src="' + esc(logoUrl) + '" class="brand-logo" style="width:' + logoWidthMm + '" alt="Herd at Todenham Manor Farm">';
-  if (menu.meta && menu.meta.tagline) {
-    html += '<p class="tagline">' + esc(menu.meta.tagline) + '</p>';
+  var tagline = menu.meta && menu.meta.tagline;
+  if (tagline && tagline.replace(/_/g, '').trim()) {
+    html += '<p class="tagline">' + esc(tagline) + '</p>';
   }
   html += '</div>';
 
