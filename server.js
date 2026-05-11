@@ -148,6 +148,30 @@ app.get('/api/status', requireAuth, (req, res) => {
   });
 });
 
+// Export — full data bundle (settings + all menus) as a downloadable JSON file
+app.get('/api/export', requireAuth, (req, res) => {
+  const settings = readSettings();
+  const menus = fs.readdirSync(MENUS_DIR)
+    .filter(f => f.endsWith('.json'))
+    .map(f => JSON.parse(fs.readFileSync(path.join(MENUS_DIR, f), 'utf8')));
+  const bundle = { exportedAt: new Date().toISOString(), settings, menus };
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Content-Disposition', `attachment; filename="herd-menu-backup-${today()}.json"`);
+  res.send(JSON.stringify(bundle, null, 2));
+});
+
+// Import — restore from a bundle file (replaces all menus and settings)
+app.post('/api/import', requireAuth, (req, res) => {
+  const { settings, menus } = req.body;
+  if (!settings || !Array.isArray(menus)) return res.status(400).json({ error: 'Invalid bundle format' });
+  // Write settings
+  fs.writeFileSync(SETTINGS_FILE, JSON.stringify({ ...settings, lastUpdated: today() }, null, 2));
+  // Clear existing menus then write imported ones
+  fs.readdirSync(MENUS_DIR).filter(f => f.endsWith('.json')).forEach(f => fs.unlinkSync(path.join(MENUS_DIR, f)));
+  menus.forEach(m => { if (m.slug) fs.writeFileSync(path.join(MENUS_DIR, `${m.slug}.json`), JSON.stringify(m, null, 2)); });
+  res.json({ ok: true, menusImported: menus.length });
+});
+
 // Settings
 app.get('/api/settings', requireAuth, (req, res) => res.json(readSettings()));
 

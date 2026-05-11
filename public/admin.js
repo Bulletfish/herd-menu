@@ -451,6 +451,27 @@ async function showSettings() {
       </div>
     </div>
     <div class="card">
+      <div class="card-header"><span style="font-weight:700;color:var(--green);font-size:13px;letter-spacing:.06em;text-transform:uppercase;">Backup &amp; Restore</span></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+          <div>
+            <p style="font-size:13px;font-weight:600;margin-bottom:4px;">Export all data</p>
+            <p class="hint" style="margin-bottom:10px;">Downloads all menus and settings as a single JSON file. Use this to back up your data or copy it to another environment.</p>
+            <button class="btn btn-green btn-sm" onclick="exportData()">Download backup</button>
+          </div>
+          <div>
+            <p style="font-size:13px;font-weight:600;margin-bottom:4px;">Import data</p>
+            <p class="hint" style="margin-bottom:10px;">Restore from a backup file. <strong>This replaces all current menus and settings.</strong></p>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <input type="file" id="import-file" accept=".json" style="font-size:12px;color:var(--muted);">
+              <button class="btn btn-sm" style="border:1px solid var(--border);background:#fff;" onclick="importData()">Import</button>
+            </div>
+            <p id="import-status" style="font-size:12px;margin-top:6px;display:none;"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
       <div class="card-header"><span style="font-weight:700;color:var(--green);font-size:13px;letter-spacing:.06em;text-transform:uppercase;">Global Defaults</span></div>
       <div class="card-body settings-grid">
         <div class="field" style="margin:0">
@@ -494,6 +515,38 @@ async function saveSettings() {
   const res = await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(settings) });
   const data = await res.json();
   if (data.ok) { showToast('Settings saved'); }
+}
+
+function exportData() {
+  window.location.href = '/api/export';
+}
+
+async function importData() {
+  const file = document.getElementById('import-file')?.files[0];
+  if (!file) return alert('Please choose a backup file first.');
+  const statusEl = document.getElementById('import-status');
+  let bundle;
+  try {
+    bundle = JSON.parse(await file.text());
+  } catch {
+    alert('That file doesn\'t look like a valid backup — could not parse JSON.');
+    return;
+  }
+  if (!bundle.menus || !bundle.settings) {
+    alert('That file doesn\'t look like a Herd Menu backup.');
+    return;
+  }
+  if (!confirm(`This will replace all ${bundle.menus.length} menus and settings with those from the backup dated ${bundle.exportedAt ? bundle.exportedAt.slice(0,10) : 'unknown'}.\n\nContinue?`)) return;
+  const res = await fetch('/api/import', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(bundle)
+  });
+  const data = await res.json();
+  if (data.ok) {
+    if (statusEl) { statusEl.style.display = 'block'; statusEl.style.color = 'var(--green)'; statusEl.textContent = `✓ Imported ${data.menusImported} menus successfully. Reloading…`; }
+    setTimeout(() => location.reload(), 1500);
+  } else {
+    if (statusEl) { statusEl.style.display = 'block'; statusEl.style.color = 'var(--red)'; statusEl.textContent = 'Import failed: ' + (data.error || 'unknown error'); }
+  }
 }
 
 // ════════════════════════════════════════════════════════════════════════════
