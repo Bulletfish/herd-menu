@@ -43,6 +43,9 @@ if (!fs.existsSync(SETTINGS_FILE)) {
 
 app.use(express.json({ limit: '2mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
+// Serve uploads from UPLOAD_DIR — when pointed at the Railway volume this
+// means uploaded logos survive deploys (container filesystem is ephemeral).
+app.use('/uploads', express.static(UPLOAD_DIR));
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 function requireAuth(req, res, next) {
