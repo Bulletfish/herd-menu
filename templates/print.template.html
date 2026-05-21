@@ -154,12 +154,12 @@
   .item-price-cell.wide { width: 42px; }
 
   /* ── Two-column page layout ──────────────────────────── */
-  .page-content.two-col { column-count: 2; column-gap: 8mm; }
-  .page-content.two-col .section { break-inside: avoid; }
+  .page-content.two-col { -webkit-column-count: 2; column-count: 2; -webkit-column-gap: 8mm; column-gap: 8mm; }
+  .page-content.two-col .section { page-break-inside: avoid; break-inside: avoid; }
   /* Header, print title and intro span both columns as a full-width masthead */
   .page-content.two-col .header,
   .page-content.two-col .menu-title,
-  .page-content.two-col .menu-intro { column-span: all; }
+  .page-content.two-col .menu-intro { -webkit-column-span: all; column-span: all; }
 
   /* ── Print media ─────────────────────────────────────── */
   @media print {
@@ -361,27 +361,38 @@ function render(menu) {
 
 render(MENU);
 
-/* ── Auto-scale: shrink to fit one A4 page if content is too tall ── */
+/* ── Auto-scale: shrink to fit one page if content is too tall ── */
 function autoFitPage() {
   var page = document.getElementById('menu-page');
   if (!page) return;
 
   // Reset any previous scale so we measure the true content height
   page.style.zoom = '';
+  page.style.transform = '';
+  page.style.transformOrigin = '';
 
-  // Measure 297mm in pixels using a temporary probe element
+  // Measure page height in px (A4 = 297mm, A5 = 210mm)
+  var isA5 = page.classList.contains('a5');
   var probe = document.createElement('div');
-  probe.style.cssText = 'position:fixed;top:0;left:0;height:297mm;width:0;visibility:hidden;pointer-events:none;';
+  probe.style.cssText = 'position:fixed;top:0;left:0;height:' + (isA5 ? '210mm' : '297mm') + ';width:0;visibility:hidden;pointer-events:none;';
   document.body.appendChild(probe);
-  var a4Px = probe.offsetHeight;
+  var pagePx = probe.offsetHeight;
   document.body.removeChild(probe);
 
-  // scrollHeight = true content height of .page including padding
   var contentPx = page.scrollHeight;
+  if (contentPx <= pagePx + 2) return; // fits, nothing to do
 
-  if (contentPx > a4Px + 2) {
-    // Scale down so content fits exactly in A4
-    page.style.zoom = (a4Px / contentPx).toFixed(5);
+  var ratio = (pagePx / contentPx).toFixed(5);
+
+  // Try zoom first (Chrome/Edge — layout-affecting, ideal for print)
+  page.style.zoom = ratio;
+
+  // Re-measure: if zoom worked, scrollHeight will have decreased proportionally.
+  // If it didn't shrink (Safari on older engines), fall back to transform.
+  if (page.scrollHeight > pagePx + 2) {
+    page.style.zoom = '';
+    page.style.transformOrigin = 'top center';
+    page.style.transform = 'scale(' + ratio + ')';
   }
 }
 
