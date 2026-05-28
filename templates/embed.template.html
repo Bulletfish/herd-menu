@@ -110,7 +110,7 @@ function renderSection(s){
     var tags=(it.allergens||[]).filter(function(a){return allergenLabels[a];});
     var tagHtml='';
     if(tags.length){tagHtml='<span class="hmw-allergens"><span class="hmw-allergen">('+tags.map(function(a){return allergenLabels[a];}).join(', ')+')</span></span>';}
-    h+='<div class="hmw-item-name">'+esc(it.name)+tagHtml+'</div>';
+    h+='<div class="hmw-item-name"'+(it.bold?' style="font-weight:700"':'')+'>'+esc(it.name)+tagHtml+'</div>';
     if(it.description)h+='<div class="hmw-item-desc">'+esc(it.description)+'</div>';
     h+='</div>';
     if(multiPrice){

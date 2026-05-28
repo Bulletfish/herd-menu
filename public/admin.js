@@ -353,6 +353,7 @@ function buildItemRow(item, si, ii, priceColumns) {
     `<button class="allergen-tag${allergens.includes(a.code) ? ' active' : ''}" title="${a.title}"
       onclick="toggleAllergen(${si},${ii},'${a.code}')">${a.label}</button>`
   ).join('');
+  const boldBtn = `<button class="allergen-tag bold-tag${item.bold ? ' active' : ''}" title="Bold item name" onclick="toggleBold(${si},${ii})">B</button>`;
 
   const priceCols = priceColumns.length >= 3 ? '65px 65px 65px' : priceColumns.length === 2 ? '70px 70px' : '80px';
   row.style.gridTemplateColumns = `1fr ${priceCols} 1fr 32px`;
@@ -376,7 +377,7 @@ function buildItemRow(item, si, ii, priceColumns) {
     <input class="item-input desc" value="${esc(item.description||'')}" placeholder="Optional note or add-on…"
       onchange="currentMenu.sections[${si}].items[${ii}].description=this.value.trim();">
     <button class="btn-icon" onclick="deleteItem(${si},${ii})">✕</button>
-    <div class="item-allergens-row">${allergenBtns}</div>`;
+    <div class="item-allergens-row">${boldBtn}<span class="allergen-sep"></span>${allergenBtns}</div>`;
   return row;
 }
 
@@ -390,6 +391,12 @@ function addSection() {
 function deleteSection(si) {
   if (!confirm(`Delete section "${currentMenu.sections[si].name}"?`)) return;
   currentMenu.sections.splice(si, 1);
+  renderSections();
+}
+
+function toggleBold(si, ii) {
+  const item = currentMenu.sections[si].items[ii];
+  item.bold = !item.bold;
   renderSections();
 }
 
